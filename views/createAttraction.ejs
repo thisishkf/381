@@ -1,0 +1,30 @@
+<html>
+<head><title>Create Attraction</title></head>
+<script><%var i =0;%></script>
+<body>
+<table>
+<form action="" method="POST">
+	<tr><td>District:</td>
+		<td><input list="district" type="name">
+			<datalist id="district"/>
+		<%for(i=0;i<result.length;i++){%>
+			<option value="<%=result[i].name%>"><%=result[i].name%>
+			<%}%>
+			</datalist>
+
+
+	</td></tr>
+	<tr><td>Title:</td>
+		<td><input name="title" id="title" type="name"/></td></tr>
+	<tr><td>Location</td></tr>
+	<tr><td>lon:</td><td></td></tr>
+	<tr><td>lat:</td><td></td></tr>
+	<tr><td>Description:</td><td></td></tr>
+	<tr><td></td><td></td></tr>
+	<tr><td></td><td></td></tr>
+	<tr><td></td><td></td></tr>
+	<tr><td></td><td></td></tr>
+</from>
+</table>
+</body>
+</html>
