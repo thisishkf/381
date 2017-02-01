@@ -3,27 +3,54 @@
 <script><%var i =0;%></script>
 <body>
 <table>
-	<tr><td>District:</td>
-		<td><input list="district" type="name">
+
+<form action="/admin/create/attraction" method="POST">
+	<tr>
+		<td>District:</td>
+		<td>
+			<input list="district" name="district" type="text">
 			<datalist id="district"/>
-		<%for(i=0;i<result.length;i++){%>
-			<option value="<%=result[i].name%>"><%=result[i].name%>
-			<%}%>
+				<%for(i=0;i<result.length;i++){%>
+					<option value="<%=result[i]._id%>"><%=result[i].name%>
+				<%}%>
 			</datalist>
+		</td>
+	</tr>
 
+	<tr>
+		<td>Title:</td>
+		<td>
+			<input name="title" id="title" type="text"/>
+		</td>
+	</tr>
 
-	</td></tr>
-	<tr><td>Title:</td>
-		<td><input name="title" id="title" type="name"/></td></tr>
-	<tr><td>Location</td></tr>
-	<tr><td>lon:</td><td></td></tr>
-	<tr><td>lat:</td><td></td></tr>
-	<tr><td>Description:</td><td></td></tr>
-	<tr><td></td><td></td></tr>
-	<tr><td></td><td></td></tr>
-	<tr><td></td><td></td></tr>
-	<tr><td></td><td></td></tr>
+	<tr>
+		<td>lon:</td>
+		<td>
+			<input name="lon" id="lon" type="text"/>
+		</td>
+	</tr>
 
+	<tr>
+		<td>lat:</td>
+		<td>
+			<input name="lon2" id="lat" type="text"/>
+		</td>
+	</tr>
+
+	<tr>
+		<td>Description:</td>
+		<td>
+			<input name="des" id="des" type="text"/>
+		</td>
+		</tr>
+
+	<tr>
+		<td>
+			<input type="submit" value="submit"/>
+		</td>
+		</tr>
+</from>
 </table>
 </body>
 </html>

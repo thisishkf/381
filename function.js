@@ -19,7 +19,7 @@ module.exports ={
 		)//end findOne
 	},
 
-	getUserInfo : function(res,db,criteria,doc) {
+	getUserInfo : function(res,db,criteria) {
 		db.collection('user').findOne(criteria,{"Password": 0},
 			function(err,result) {
 				assert.equal(err,null);
@@ -38,31 +38,78 @@ module.exports ={
 		)//end findOne
 	},
 
-	createUser : function(db,doc){
-		db.collection('user').insertOnce(doc,
+	createUser : function(db,doc,callback){
+		db.collection('user').insertOne(doc,
 			function(err,result) {
 				assert.equal(err,null);
-				res.end("Create Success");
+				callback();
 			}//end function(err,result) {
 		)//end insertOnce
 	},
 
-	getWeatherAPI : function(res,db,dayCount) {
-		db.collection('weather').find().limit(2).toArray(
-			function(res,err,result){
-				assert.equal(err,null);
-				console.log(reuslt);
-			}
-		)
+	weatherAPI : function (db,callback) {
+		var dbres = [];
+		var cursor = db.collection('weather').find({}).sort({"Date" : 1}).limit(5);
+			cursor.each(function(err,doc) {
+				if (doc != null) {
+					dbres.push(doc);
+				} else {
+					callback(dbres);
+				}
+		});
 	},
 
 	getDistrictList : function(db,callback){
-		db.collection('district').find({},{'name':1,_id:0},
-			function(err,result){
-				assert.equal(err,null);
+		var district = [];
+		var cursor = db.collection('district').find({},{'name':1,_id:1});
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					district.push(doc);
+				}
+				else{
+					callback(district);
+				}
+			});
+	},
+
+	addDistrict : function(db,criteria,doc,callback){
+		db.collection('district').update(criteria,{$push: doc},
+			function(err,result) {
+				if (err) {
+					result = err;
+					console.log("update: " + JSON.stringify(err));
+				}
 				callback(result);
 			}
-		)
+		);
+	},
+
+	addDistrictComment : function(db,criteria,doc,callback){
+		db.collection('district').update(criteria,{$push: doc},
+			function(err,result) {
+				if (err) {
+					result = err;
+					console.log("update: " + JSON.stringify(err));
+				}
+				callback(result);
+			}
+		);
+	},
+
+	getDistrictInfo : function(db,name,callback){
+		var district = [];
+		var cursor = db.collection('district').aggregate([
+			{$match: {"site": { $elemMatch :{"title" :name} } } },
+			{$unwind : "$site"},
+			]);
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					district.push(doc);
+				}
+				else{
+					callback(district);
+				}
+			});
 	}
 
 }
