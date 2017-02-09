@@ -42,6 +42,7 @@ module.exports ={
 		db.collection('user').insertOne(doc,
 			function(err,result) {
 				assert.equal(err,null);
+				callback();
 			}//end function(err,result) {
 		)//end insertOnce
 	},
@@ -72,6 +73,18 @@ module.exports ={
 	},
 
 	addDistrict : function(db,criteria,doc,callback){
+		db.collection('district').update(criteria,{$push: doc},
+			function(err,result) {
+				if (err) {
+					result = err;
+					console.log("update: " + JSON.stringify(err));
+				}
+				callback(result);
+			}
+		);
+	},
+
+	addDistrictComment : function(db,criteria,doc,callback){
 		db.collection('district').update(criteria,{$push: doc},
 			function(err,result) {
 				if (err) {

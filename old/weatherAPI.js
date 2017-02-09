@@ -121,7 +121,6 @@ apiRes.on('end', function (chunk) {
 				else {
 					console.log("Create success: " + result.insertedId);
 				}
-				count++;
 			})//end addWeather
 										
 			if(content.indexOf("Date/Month ") >0){
@@ -134,7 +133,7 @@ apiRes.on('end', function (chunk) {
 			}
 					
 		}//end while loop
-})//end remove
+	})//end callback of remove
 })//end MongoClient.connect
 
 	    });//end of apiRes.on('end')
@@ -146,18 +145,6 @@ apiRes.on('end', function (chunk) {
 	apiReq.end();
  }
 ).start();
-
-new Job('0 */1 * * * *', function() {	
-	console.log(Date() + " Buffer Data");
-	MongoClient.connect(mongourl,function(err,db) {
-		assert.equal(err,null);
-			getDistrict(db,function(){
-					getweather(db,function(){
-						db.close();
-			})
-		})//getDistrict
-	})//mongo
-}).start();
 
 //function
 function addWeather(db,jsonDoc,callback){

@@ -5,6 +5,7 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 var express = require('express');
 var app = express();
+var fs = require('fs');
 
 var content = "";
 var options = {
@@ -16,22 +17,21 @@ var options = {
 var loopCount =1;
 var Job = require('cron').CronJob;
 
-new Job('00 34 12 * * 1-7', function() {	
+var weatherAPI = new Job('0 */20 * * * *', function() {	
 
 	content = "";
-	console.log(Date());
+	console.log(Date() + " Create weather API");
+
   var apiReq = http.request(options, function(apiRes) {
 	    apiRes.setEncoding('utf8');
 
 	    apiRes.on('data', function (chunk) {
-
-		/****target html*****/
-		if(chunk.includes("Date")){
-			content+= chunk.substring(chunk.indexOf("Date/Month"));
-		}//end if
-		if(content.includes("</pre>")){
-			content=content.substring(0,chunk.indexOf("</pre>")-1);
-		}
+				if(chunk.includes("Date")){
+					content+= chunk.substring(chunk.indexOf("Date/Month"));
+				}
+				if(content.includes("</pre>")){
+					content=content.substring(0,chunk.indexOf("</pre>")-1);
+				}
 	    });//end apiRes.on('data);
 
 apiRes.on('end', function (chunk) {
@@ -44,16 +44,15 @@ apiRes.on('end', function (chunk) {
 	var posOfRH  =0, endOfRH  =0;
 	
 	var dayint = 1;
-	var criteria ={};
+	var docArray = [];
 	var doc ={};
 				
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		db.collection('weather').remove({},
-			function(err,result) {
+			function(err,result) {//callback after delete
 				console.log("Reset weather Database");
-				
-			
+					
 		while(loopCount >0){
 			//get date
 			posOfDate = content.indexOf(" ")+1;
@@ -66,6 +65,7 @@ apiRes.on('end', function (chunk) {
 			posOfWind = content.indexOf(": ")+2;
 			endOfWind = content.indexOf(".");
 			buffer = content.substring(posOfWind,endOfWind);
+			buffer = buffer.replace("\n", " ");
 			arg.push(buffer);
 			content = content.substring(content.indexOf("Weather: "));
 
@@ -98,7 +98,6 @@ apiRes.on('end', function (chunk) {
 			arg.push(buffer);
 			//end one Date	
 
-			criteria = {"Date" : arg[0]};
 			doc = {	"Date" : arg[0],
 						"Wind" : arg[1],
 						"Weather" : arg[2],
@@ -106,29 +105,32 @@ apiRes.on('end', function (chunk) {
 						"RH Range" : arg[4],
 						"Icon" : arg[5]
 						};
+			docArray.push(doc);
 						
 				/******prepare document*****/
-						
-
-	addWeather(db,doc,function(err,result){
-		if (err) {
-			result = err;
-			console.log("insertOne error: " + JSON.stringify(err));
-		} 
-		else {
-			console.log("Create success: " + result.insertedId);
-		}
-	})//end addWeather
+			//end addWeather
 										
-	if(content.indexOf("Date/Month ") >0){
-		arg = [];
-		content = content.substring(content.indexOf("Date/Month "));
-	}
-	else{
-		loopCount=0;
-	}
-					
-}//end while loop
+			if(content.indexOf("Date/Month ") >0){
+				arg = [];
+				content = content.substring(content.indexOf("Date/Month "));
+			}
+			else {
+				loopCount=0;
+				addWeather(db,docArray,function(err,result){
+					if (err) {
+						console.log("insertOne error: " + JSON.stringify(err));
+					} 
+					else {
+						console.log("Create success: " + result);
+						getDistrict(db,function(){
+								getweather(db,function(){
+									db.close();
+								})
+						})//getDistrict
+					}
+				})
+			}				
+		}//end while loop
 })//end remove
 })//end MongoClient.connect
 
@@ -142,9 +144,80 @@ apiRes.on('end', function (chunk) {
  }
 ).start();
 
+var bufferData = new Job('0 0 0 */1 * *', function() {	
+	console.log(Date() + " Buffer Data");
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			
+	})//mongo
+}).start();
+
+//function
 function addWeather(db,jsonDoc,callback){
-	db.collection('weather').insertOne(jsonDoc,
+	db.collection('weather').insert(jsonDoc,
 		function(err,result){
 			callback(err,result);
 	})
+}
+
+function getDistrict(db,callback){
+		var district = [];
+		var str="exports.dis = dis;";
+		var cursor = db.collection('district').find();
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					district.push(doc);
+				}
+				else
+				{
+					var buffer = "var dis = " + JSON.stringify(district) + "\n";
+					fs.writeFile("data.js",buffer,function(err){
+						if(err) {
+							console.log(err);
+						}
+						else {
+							fs.appendFile("data.js",str,function(err){
+								if(err){
+									console.log(err);
+								}
+								else {
+									console.log("District Information Buffered!");
+									callback();
+								}
+							})//fs.appendFile
+						}
+					})//fs.writeFile
+				}
+		});
+}
+
+function getweather(db,callback){
+		var weather = [];
+		var str="exports.weather = weather;";
+		var cursor = db.collection('weather').find().sort({"Date" : 1}).limit(9);
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					weather.push(doc);
+				}
+				else
+				{
+					var buffer = "\nvar weather = " + JSON.stringify(weather) + "\n";
+					fs.appendFile("data.js",buffer,function(err){
+						if(err) {
+							console.log(err);
+						}
+						else {
+							fs.appendFile("data.js",str,function(err){
+								if(err){
+									console.log(err);
+								}
+								else {
+									console.log("Weather Infomration Buffered!");
+									callback();
+								}
+							})//fs.appendFile
+						}
+						})//fs.writeFile
+					}
+			});
 }

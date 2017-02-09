@@ -34,7 +34,7 @@
 	<tr>
 		<td>lat:</td>
 		<td>
-			<input name="lon2" id="lat" type="text"/>
+			<input name="lat" id="lat" type="text"/>
 		</td>
 	</tr>
 

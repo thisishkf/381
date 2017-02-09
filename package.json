@@ -8,7 +8,9 @@
 		"express-fileupload": "latest",
 		"body-parser": "latest",
 		"cron" : "latest",
-		"assert" : "latest"
+		"assert" : "latest",
+		"haversine" : "latest",
+		"fs" : "lastest"
 	},
 	"scripts" : {
 		"start": "node server.js"

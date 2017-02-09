@@ -8,11 +8,12 @@
 		"express-fileupload": "latest",
 		"body-parser": "latest",
 		"cron" : "latest",
-		"assert" : "latest"
+		"assert" : "latest",
+		"haversine" : "latest"
 	},
 	"scripts" : {
 		"start": "node server.js"
 	},
-	"engine": "*"
+	"engine": "ejs"
 }
 
