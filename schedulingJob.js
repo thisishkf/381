@@ -14,11 +14,11 @@ var options = {
     path: '/textonly/v2/forecast/nday.htm',
     method: 'GET'
 };
-var loopCount =1;
+var loopCount ;
 var Job = require('cron').CronJob;
 
 var weatherAPI = new Job('0 */20 * * * *', function() {	
-
+	loopCount =1
 	content = "";
 	console.log(Date() + " Create weather API");
 
@@ -115,6 +115,7 @@ apiRes.on('end', function (chunk) {
 				content = content.substring(content.indexOf("Date/Month "));
 			}
 			else {
+				console.log("Start Import Data!");
 				loopCount=0;
 				addWeather(db,docArray,function(err,result){
 					if (err) {

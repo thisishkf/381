@@ -278,9 +278,9 @@ app.get('/api/read/:site/comment',function(req,res){
 })
 
 /*******************radar*********************/
-app.get('/api/read/radar', function(req,res){
-//var start = {latitude: req.body.lat, longitude: req.body.lon};
-	var start = {latitude: 30.316414, longitude: 30.180374};
+app.get('/api/read/radar/:lat/:lon', function(req,res){
+
+	var start ={latitude: req.params.lat, longitude: req.params.lon};
 	var end ={latitude: 0, longitude: 0};
 	var output =[];
 	for(eachDistrict of data.dis){	
@@ -289,7 +289,6 @@ app.get('/api/read/radar', function(req,res){
 				if(eachSite.location != undefined){
 						end.latitude = parseInt(eachSite.location.lat);
 						end.longitude = parseInt(eachSite.location.lon);
-						console.log(end);
 						console.log(haversine(start,end));
 						if(haversine(start,end) <=100){
 							output.push(eachSite);

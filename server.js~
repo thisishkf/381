@@ -278,10 +278,10 @@ app.get('/api/read/:site/comment',function(req,res){
 })
 
 /*******************radar*********************/
-app.get('/api/read/radar', function(req,res){
-//var start = {latitude: req.body.lat, longitude: req.body.lon};
-	var start = {latitude: 22.316414, longitude: 14.180374};
-	var end ={latitude: 0, longitude: 0};
+app.get('/api/read/radar/:lat/:lon', function(req,res){
+
+	var start ={latitude: req.params.lat, longitude: req.params.lon};
+	var en ={latitude: req.params.lat, longitude: req.params.lon};
 	var output =[];
 	for(eachDistrict of data.dis){	
 		if(eachDistrict.site != undefined){
