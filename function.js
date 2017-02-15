@@ -49,14 +49,14 @@ module.exports ={
 	},
 
 	getDistrictList : function(db,callback){
-		var district = [];
+		var output = [];
 		var cursor = db.collection('district').find({},{'name':1,_id:1});
 			cursor.each(function(err,doc){
 				if(doc!= null){
-					district.push(doc);
+					output.push(doc);
 				}
 				else{
-					callback(district);
+					callback(output);
 				}
 			});
 	},
@@ -86,19 +86,24 @@ module.exports ={
 	},
 
 	getDistrictInfo : function(db,name,callback){
-		var district = [];
+		var output = [];
 		var cursor = db.collection('district').aggregate([
 			{$match: {"site": { $elemMatch :{"title" :name} } } },
 			{$unwind : "$site"},
 			]);
 			cursor.each(function(err,doc){
 				if(doc!= null){
-					district.push(doc);
+					output.push(doc);
 				}
 				else{
-					callback(district);
+					callback(outputs);
 				}
 			});
+	},
+
+	getHotSite : function(data){
+		var output =[];
+		
 	}
 
 

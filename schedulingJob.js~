@@ -7,8 +7,8 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 var mongourl = 'mongodb://user:123@ds159998.mlab.com:59998/fyp';
 
-var scheduleTime = '0 30 15 * * *';
-var scheduleTime2 = '30 30 */1 * * *';
+var scheduleTime = '0 59 22 * * *';
+var scheduleTime2 = '0 30 */1 * * *';
 
 var weatherAPI = new Job(scheduleTime , function() {	
 	var loopCount =1

@@ -140,17 +140,6 @@ app.post('/update/user/info',function(req,res){
 
 
 /*******************district*********************/
-//tested
-app.get('/admin/create/attraction',function(req,res){
-	MongoClient.connect(mongourl,function(err,db) {
-		assert.equal(err,null);
-		func.getDistrictList(db,function(result){
-			res.render('createAttraction.ejs',{result:result});
-			db.close();
-		});
-	});//end db
-})
-
 //create attraction
 //tested
 app.post('/admin/create/attraction',function(req,res){
@@ -308,7 +297,8 @@ app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
 })
 
 
-app.get('/api/read/map', function(req,res){
+app.get('/api/read/map/:category', function(req,res){
+	var criteria = req.params.category;
 	var output =[];
 	for(eachDistrict of data.dis){	
 		if(eachDistrict.site != undefined){
@@ -335,10 +325,82 @@ app.get('/api/read/weather', function(req,res) {
 
 /*******************Home Page*********************/
 app.get('/api/read/home', function(req,res) {
-		res.send(data.weather);
+	var output = [];
+	var hot = [];
+	var weather =[];
+
+	weather.push(data.weather);
+
+	for(eachDistrict of data.dis){	
+		if(eachDistrict.site != undefined){
+			for(eachSite of eachDistrict.site){
+				if(eachSite.location != undefined && eachSite.promotion != undefined){
+					if(eachSite.promotion == "hot"){
+						hot.push(eachSite);
+					}
+				}
+			}
+		}
+	}
+
+	
+
 })
 
+/*******************UI*********************/
+//tested
+app.get('/admin/create/attraction',function(req,res){
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+		func.getDistrictList(db,function(result){
+			res.render('createAttraction.ejs',{result:result});
+			db.close();
+		});
+	});//end db
+})
 
+//tested
+app.get('/admin/read/attraction',function(req,res){
+	var output = [];
+	var title = [];
+	for(eachDistrict of data.dis){	
+		if(eachDistrict.site != undefined){
+			for(eachSite of eachDistrict.site){
+				title.push(eachDistrict.name);
+				title.push(eachSite.title);
+				if(eachDistrict.promote == undefined || eachDistrict.promote != "hot" ){
+					title.push(true);
+				}else{
+					title.push(false);
+				}
+				output.push(title);
+				title= [];
+			}
+		}
+	}
+	res.render('attraction.ejs',{output:output});
+})
+
+//tested
+app.get('/admin/read/site/:name',function(req,res){
+	var name = req.params.name;
+	for(eachDistrict of data.dis){	
+		if(eachDistrict.site != undefined){
+			for(eachSite of eachDistrict.site){
+				if(name == eachSite.title){
+					res.render('site.ejs',{output:eachSite});
+				}
+			}
+		}
+	}
+})
+
+/*
+app.post('/admin/update/hot',function(req,res){
+	var name = req.body.tick;
+	var query = {};
+	db.collection('attraction').update({},{$set: {}})
+})*/
 
 app.listen(process.env.PORT ||8090, function() {
   console.log('Server is on.');
