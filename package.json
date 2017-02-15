@@ -10,7 +10,7 @@
 		"cron" : "latest",
 		"assert" : "latest",
 		"haversine" : "latest",
-		"fs" : "lastest"
+		"fs" : "latest"
 	},
 	"scripts" : {
 		"start": "node server.js"

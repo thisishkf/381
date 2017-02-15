@@ -9,7 +9,8 @@
 		"body-parser": "latest",
 		"cron" : "latest",
 		"assert" : "latest",
-		"haversine" : "latest"
+		"haversine" : "latest",
+		"fs" : "lastest"
 	},
 	"scripts" : {
 		"start": "node server.js"

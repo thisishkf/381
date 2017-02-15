@@ -1,4 +1,5 @@
 var assert = require('assert');
+var fs = require('fs');
 module.exports ={
 	loginUser : function(db, user,status){
 		var doc = {"Name" : user};
@@ -45,18 +46,6 @@ module.exports ={
 				callback();
 			}//end function(err,result) {
 		)//end insertOnce
-	},
-
-	weatherAPI : function (db,callback) {
-		var dbres = [];
-		var cursor = db.collection('weather').find({}).sort({"Date" : 1}).limit(5);
-			cursor.each(function(err,doc) {
-				if (doc != null) {
-					dbres.push(doc);
-				} else {
-					callback(dbres);
-				}
-		});
 	},
 
 	getDistrictList : function(db,callback){

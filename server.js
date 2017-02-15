@@ -13,12 +13,14 @@ var express = require('express');
 var fileUpload = require('express-fileupload');
 var app = express();
 var bodyParser = require('body-parser');
+var fs = require('fs');
+
 var haversine = require('haversine');
 //customized function
 var func = require('./function.js');
 var data = require('./data.js');
+var weatherAPI = require('./schedulingJob.js');
 //on-trail function
-
 
 // middlewares
 app.use(bodyParser.json());
@@ -49,7 +51,7 @@ app.post('/login',function(req,res) {
 });
 
 //logout
-app.post('/login',function(req,res) {
+app.post('/logout',function(req,res) {
 	var user = req.body.name;
 	var criteria = {"Name" : user};
 	MongoClient.connect(mongourl,function(err,db) {
@@ -76,7 +78,7 @@ app.post('/login',function(req,res) {
 
 app.post('/create/user',function(req,res){
 	var doc = req.body.doc;
-	var criteria = {"name" : doc.name};
+	var criteria = {"name" : doc.name, "Password" : doc.password};
 console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
@@ -278,8 +280,8 @@ app.get('/api/read/:site/comment',function(req,res){
 })
 
 /*******************radar*********************/
-app.get('/api/read/radar/:lat/:lon', function(req,res){
-
+app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
+	var criteria = req.params.category;
 	var start ={latitude: req.params.lat, longitude: req.params.lon};
 	var end ={latitude: 0, longitude: 0};
 	var output =[];
@@ -287,12 +289,34 @@ app.get('/api/read/radar/:lat/:lon', function(req,res){
 		if(eachDistrict.site != undefined){
 			for(eachSite of eachDistrict.site){
 				if(eachSite.location != undefined){
+					if(eachSite.categroy == criteria){
 						end.latitude = parseInt(eachSite.location.lat);
 						end.longitude = parseInt(eachSite.location.lon);
 						console.log(haversine(start,end));
 						if(haversine(start,end) <=100){
 							output.push(eachSite);
 						}
+					}
+				}
+			}
+		}
+	}
+	if(output.length <1)
+		res.send("No result");
+	else	
+		res.send(output);
+})
+
+
+app.get('/api/read/map', function(req,res){
+	var output =[];
+	for(eachDistrict of data.dis){	
+		if(eachDistrict.site != undefined){
+			for(eachSite of eachDistrict.site){
+				if(eachSite.location != undefined){
+					if(eachSite.categroy == criteria){
+						output.push(eachSite);
+					}
 				}
 			}
 		}
@@ -306,15 +330,15 @@ app.get('/api/read/radar/:lat/:lon', function(req,res){
 /*******************weather API*********************/
 //tested
 app.get('/api/read/weather', function(req,res) {
- 		/*MongoClient.connect(mongourl,function(err,db) {
-			assert.equal(err,null);	
-			func.weatherAPI(db,function(dbres) {
-				db.close();
-				res.end(JSON.stringify(dbres));
-			});
-		});*/
 		res.send(data.weather);
-});
+})
+
+/*******************Home Page*********************/
+app.get('/api/read/home', function(req,res) {
+		res.send(data.weather);
+})
+
+
 
 app.listen(process.env.PORT ||8090, function() {
   console.log('Server is on.');

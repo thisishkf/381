@@ -1,4 +1,5 @@
 var assert = require('assert');
+var fs = require('fs');
 module.exports ={
 	loginUser : function(db, user,status){
 		var doc = {"Name" : user};
@@ -47,18 +48,69 @@ module.exports ={
 		)//end insertOnce
 	},
 
-	weatherAPI : function (db,callback) {
-		var dbres = [];
-		var cursor = db.collection('weather').find({}).sort({"Date" : 1}).limit(5);
-			cursor.each(function(err,doc) {
-				if (doc != null) {
-					dbres.push(doc);
-				} else {
-					callback(dbres);
+/**************Buffer Data Function*********************/
+	getweather : function(db,callback){
+		var weather = [];
+		var str="exports.weather = weather;";
+		var cursor = db.collection('weather').find().sort({"Date" : 1}).limit(9);
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					weather.push(doc);
+				}
+				else
+				{
+					var buffer = "\nvar weather = " + JSON.stringify(weather) + "\n";
+					fs.appendFile("data.js",buffer,function(err){
+						if(err) {
+							console.log(err);
+						}
+						else {
+							fs.appendFile("data.js",str,function(err){
+								if(err){
+									console.log(err);
+								}
+								else {
+									console.log("Weather Infomration Buffered!");
+									callback();
+								}
+							})//fs.appendFile
+						}
+						})//fs.writeFile
+					}
+			});
+},
+	getDistrict : function(db,callback){
+		var district = [];
+		var str="exports.dis = dis;";
+		var cursor = db.collection('district').find();
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					district.push(doc);
+				}
+				else
+				{
+					var buffer = "var dis = " + JSON.stringify(district) + "\n";
+					fs.writeFile("data.js",buffer,function(err){
+						if(err) {
+							console.log(err);
+						}
+						else {
+							fs.appendFile("data.js",str,function(err){
+								if(err){
+									console.log(err);
+								}
+								else {
+									console.log("District Information Buffered!");
+									callback();
+								}
+							})//fs.appendFile
+						}
+					})//fs.writeFile
 				}
 		});
-	},
+},
 
+/*************End Buffer Data Function*********************/
 	getDistrictList : function(db,callback){
 		var district = [];
 		var cursor = db.collection('district').find({},{'name':1,_id:1});
@@ -111,5 +163,7 @@ module.exports ={
 				}
 			});
 	}
+
+
 
 }
