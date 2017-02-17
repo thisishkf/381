@@ -1,9 +1,13 @@
 <html>
-<head><title>Create Attraction</title></head>
-<script><%var i =0;%></script>
+	<head>
+		<title>Create Attraction</title>
+		<script>var i =0;</script>
+		<style><%- include style.css %></style>
+	</head>
 <body>
-<table>
 
+<%- include menu.ejs %>
+<table>
 <form action="/admin/create/attraction" method="POST">
 	<tr>
 		<td>District:</td>

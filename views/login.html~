@@ -1,0 +1,23 @@
+<html>
+<body>
+
+<div>
+	<h3>Login</h3>
+	<ul>
+		<li>
+			Account
+		</li>
+		<li>
+			<input type="name" name="account" required/>
+		</li>
+	</ul>
+
+	<ul>
+		<li>
+			<input type="password" name="password" required/>
+		</li>
+	</ul>
+</div>
+
+</body>
+</html>

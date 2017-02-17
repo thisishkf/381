@@ -14,6 +14,7 @@ var fileUpload = require('express-fileupload');
 var app = express();
 var bodyParser = require('body-parser');
 var fs = require('fs');
+var session = require('cookie-session');
 
 var haversine = require('haversine');
 //customized function
@@ -26,6 +27,7 @@ var weatherAPI = require('./schedulingJob.js');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(fileUpload());
+app.use(session({cookieName: 'session',keys: ['IT9']}));
 
 //login
 //api: -d'name="abc"&pw="123"'
@@ -77,13 +79,13 @@ app.post('/logout',function(req,res) {
 //api: curl -H 'Content-Type:application/JSON' -d '{"doc" : {"name" : "Sam Ho"}}' -X POST http://localhost:8090/create/user
 
 app.post('/create/user',function(req,res){
-	var doc = req.body.doc;
-	var criteria = {"name" : doc.name, "Password" : doc.password};
+	console.log(req.body);
+	var criteria  ={"name" : doc.name};
+	var doc = {"name" : doc.name, "password" : doc.password, "info" : null, "active" : false, "status" : "offline" , "location" : {"lat" : 0, " lon" : 0}};
 console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
-		console.log(result);
 			if(result == null){
 				func.createUser(db,doc,function(){
 					res.send("ok");
@@ -143,17 +145,16 @@ app.post('/update/user/info',function(req,res){
 //create attraction
 //tested
 app.post('/admin/create/attraction',function(req,res){
-	var des = req.body.des;
-	var title = req.body.title;
-	var lon = req.body.lon;
-	var lat = req.body.lat;
-	var dis = req.body.district;
 	var doc = {"site" : 
-							{"title" : title, 
-							"location":{"lon" : lon, "lat" : lat},  
-							"description" : des}
+							{"title" : req.body.title, 
+							"location":{"lon" : req.body.lon, 
+													"lat" : req.body.lat
+													},  
+							"description" : req.body.des,
+							"promotion" : null,
+							"comment" : []}
 						};
-	var criteria = {"_id" : ObjectId(dis)};
+	var criteria = {"_id" : ObjectId(req.body.district)};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.addDistrict(db,criteria,doc,function(result){
@@ -395,9 +396,88 @@ app.get('/admin/read/site/:name',function(req,res){
 	}
 })
 
-//
+app.get('/admin/login',function(req,res){
+	res.render('login.ejs');
+})
+
+app.post('/admin/login', function(req,res){
+	var ac = req.body.account;
+	var pw = req.body.password;
+	var criteria = {"name" : ac , "password" : pw};
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			findUser(db,criteria,function(result){
+				if(result == null){
+					res.send("null");
+				}//no user
+				else if(result.name == ac && result.password == pw){
+					req.session.authenticated = true;
+					res.redirect('/admin');
+				}
+			});
+	});//end db
+})
+
+function findUser(db,criteria,callback) {
+	db.collection('user').findOne(criteria,
+		function(err,result) {
+			assert.equal(err,null);
+			callback(result);
+		}//end function(err,result) {
+	)//end find
+}
+
+app.get('/admin',function(req,res){
+	if(req.session.authenticated != true){
+		res.redirect('/admin/login');
+	}else{
+		res.render('home.ejs');
+	}
+})
+
+app.get('/logout',function(req,res){
+	req.session.authendication = false;
+	res.redirect('/admin/login');
+})
+
+app.get('/admin/create/user',function(req,res){
+	if(req.session.authenticated != true){
+		res.redirect('/admin/login');
+	}else{
+		res.render('createUser.ejs',{msg:""});
+	}
+})
+
+app.post('/admin/create/user',function(req,res){
+	if(req.body.password == req.body.cPassword){
+		var criteria = {"name" : req.body.ac , "password" : req.body.password};
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+		func.createUser(db,criteria,function(){
+			res.send("<h1>Created</h1>");
+			res.end();
+		})
+	})
+	}else{
+		res.render('createUser.ejs',{msg:"Password should be equal to confrim password"});
+	}
+})
+
+
 app.post('/admin/update/hot',function(req,res){
-	console.log(req.body);
+	var name = req.body.tick;
+	console.log(name);
+	//var criteria = {$or : {"title" : name[0], "title" : name[1],"title" : name[2]}};
+	var criteria = {"title" : name[0]};
+	console.log(criteria);
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+		db.collection('attraction').update({criteria},
+			{$set: {"site.$.promotion" : "hot"}}, 
+			function(err,result){
+				console.log(result);
+			});
+	});//end db
 })
 
 app.listen(process.env.PORT ||8090, function() {

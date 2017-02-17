@@ -4,12 +4,12 @@ var i=0;
 </script>
 <body>
 	<table>
+		<tr><th>District</th><th>Site</th><th>Hot</th></tr>
 	<form action="/admin/update/hot" method="POST">
 		<% for(eachDistrict of output){	%>
 				<tr><th><%= eachDistrict[0] %></th>
 				<td><a href="/admin/read/site/<%= eachDistrict[1] %>">
 					<%= eachDistrict[1] %></a>
-					<input type="hidden" name="name" value="<%= eachDistrict[1] %>"/>
 				</td>
 				<td>
 					<input type="checkbox" name="tick" value="<%=eachDistrict[1]%>"/>					

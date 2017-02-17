@@ -1,0 +1,12 @@
+<html>
+	<head>
+		<title>Create Attraction</title>
+		<script>var i =0;</script>
+		<style><%- include style.css %></style>
+	</head>
+<body>
+
+<%- include menu.ejs %>
+Home
+</body>
+</html>

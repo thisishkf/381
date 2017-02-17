@@ -1,9 +1,12 @@
 <html>
-<head><title>Create Attraction</title></head>
-<script><%var i =0;%></script>
+	<head>
+		<title>Create Attraction</title>
+		<script>var i =0;</script>
+		<style><%- include style.css %></style>
+	</head>
 <body>
 <table>
-
+<%- include menu.ejs %>
 <form action="/admin/create/attraction" method="POST">
 	<tr>
 		<td>District:</td>
@@ -21,6 +24,18 @@
 		<td>Title:</td>
 		<td>
 			<input name="title" id="title" type="text"/>
+		</td>
+	</tr>
+
+	<tr>
+		<td>Category:</td>
+		<td>
+			<input list="cat" name="cat" type="text">
+			<datalist id="cat"/>
+					<option value="Museum">Museum
+					<option value="Restuarant">Restuarant
+					<option value="Mall">Mall
+			</datalist>
 		</td>
 	</tr>
 

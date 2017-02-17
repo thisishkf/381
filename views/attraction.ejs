@@ -2,8 +2,15 @@
 <script>
 var i=0;
 </script>
+<style>
+<%- include style.css %>
+</style>
+</head>
+
 <body>
+<%- include menu.ejs %>
 	<table>
+		<tr><th>District</th><th>Site</th><th>Hot</th></tr>
 	<form action="/admin/update/hot" method="POST">
 		<% for(eachDistrict of output){	%>
 				<tr><th><%= eachDistrict[0] %></th>

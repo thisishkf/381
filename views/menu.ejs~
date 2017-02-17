@@ -1,0 +1,8 @@
+<body>
+<ul class="menu">
+	<li><a href="/admin">Home</a></li>
+	<li><a href="/admin/create/auser">New User</a></li>
+	<li><a href="/admin/create/attraction">New Site</a></li>
+	<li><a href="/admin/read/attraction">Districts</a></li>
+	<li><a href="/admin/logout">Log Out</a></li>
+</ul>

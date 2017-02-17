@@ -1,0 +1,34 @@
+<html>
+<head>
+<style>
+<%- include style.css %>
+</style>
+</head>
+<%- include menu.ejs %>
+
+<div class="login-box">
+	<h3>Login</h3>
+	<form action="/admin/login" method="post">
+	<ul>
+		<li>
+			Account
+		</li>
+		<li>
+			<input type="name" name="account" required/>
+		</li>
+	</ul>
+
+	<ul>
+		<li>
+			Password
+		</li>
+		<li>
+			<input type="password" name="password" required/>
+		</li>
+	</ul>
+	<input type="submit" value="Login"/>
+	</form>
+</div>
+
+</body>
+</html>

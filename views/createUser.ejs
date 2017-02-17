@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<script>var i =0;</script>
+		<style><%- include style.css %></style>
+	</head>
+<body>
+
+<%- include menu.ejs %>
+
+<% if(msg.length >2){ %>
+<h2><%= msg %></h2>
+<% } %>
+<table>
+<form action="/admin/create/user" method="POST">
+
+	<tr>
+		<td>Account:</td>
+		<td>
+			<input name="account" type="name"/>
+		</td>
+	</tr>
+
+	<tr>
+		<td>password:</td>
+		<td>
+			<input name="password" type="password"/>
+		</td>
+	</tr>
+
+	<tr>
+		<td>Confrim Password:</td>
+		<td>
+			<input name="cPassword" type="password"/>
+		</td>
+	</tr>
+	
+
+	<tr>
+		<td colspan="2"> <input type="submit" value="submit"/>
+	</tr>
+
+</from>
+</table>
+</body>
+</html>
