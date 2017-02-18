@@ -367,6 +367,7 @@ app.get('/admin/read/attraction',function(req,res){
 	for(eachDistrict of data.dis){	
 		if(eachDistrict.site != undefined){
 			for(eachSite of eachDistrict.site){
+				title.push(eachDistrict._id);
 				title.push(eachDistrict.name);
 				title.push(eachSite.title);
 				if(eachDistrict.promote == undefined || eachDistrict.promote != "hot" ){
@@ -468,12 +469,13 @@ app.post('/admin/update/hot',function(req,res){
 	var name = req.body.tick;
 	console.log(name);
 	//var criteria = {$or : {"title" : name[0], "title" : name[1],"title" : name[2]}};
-	var criteria = {"title" : name[0]};
+	var criteria = {"site.title" : name};
 	console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
-		db.collection('attraction').update({criteria},
-			{$set: {"site.$.promotion" : "hot"}}, 
+		//db.collection('attraction').update({criteria},
+			//{$set: {"site.promotion" : "hot"}}, 
+			db.collection('district').findOne({criteria},
 			function(err,result){
 				console.log(result);
 			});
