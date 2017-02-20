@@ -15,7 +15,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var session = require('cookie-session');
-
+var url = require('url');
 var haversine = require('haversine');
 //customized function
 var func = require('./function.js');
@@ -80,9 +80,18 @@ app.post('/logout',function(req,res) {
 
 app.post('/create/user',function(req,res){
 	console.log(req.body);
-	var criteria  ={"name" : doc.name};
-	var doc = {"name" : doc.name, "password" : doc.password, "info" : null, "active" : false, "status" : "offline" , "location" : {"lat" : 0, " lon" : 0}};
-console.log(criteria);
+	var criteria  ={"name" : req.body.name};
+	var doc = {"name" : req.body.name, 
+							"password" : doc.password, 
+							"info" : null, 
+							"active" : false, 
+							"status" : "offline" , 
+							"location" : {
+								"lat" : 0, 
+								"lon" : 0
+								}
+						};
+	console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
@@ -98,6 +107,37 @@ console.log(criteria);
 		});
 	});
 });
+
+//test*****************************test************
+app.get('/test/create/user/:name/:pw',function(req,res){
+	var doc = {"name" : req.params.name, 
+							"password" : req.params.pw, 
+							"info" : null, 
+							"active" : false, 
+							"status" : "offline" , 
+							"location" : {
+								"lat" : 0, 
+								"lon" : 0
+								}
+						};
+	var criteria = {"name" = req.params.name};
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+		func.findUser(db,criteria,function(result){
+			if(result == null){
+				func.createUser(db,doc,function(){
+					res.send("ok");
+				});
+			}
+			else{
+				res.end("User Name is alerady Exisit");
+			}
+			db.close();
+		});
+	});
+});
+
+
 //get user information
 //tested
 //api =curl -d 'name=sam' -X POST http://localhost:8090/read/user/info
@@ -150,8 +190,10 @@ app.post('/admin/create/attraction',function(req,res){
 							"location":{"lon" : req.body.lon, 
 													"lat" : req.body.lat
 													},  
+							"category" : req.body.cat,
 							"description" : req.body.des,
 							"promotion" : null,
+							"issue" : null,
 							"comment" : []}
 						};
 	var criteria = {"_id" : ObjectId(req.body.district)};
@@ -301,12 +343,18 @@ app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
 app.get('/api/read/map/:category', function(req,res){
 	var criteria = req.params.category;
 	var output =[];
+	var one =[];
 	for(eachDistrict of data.dis){	
 		if(eachDistrict.site != undefined){
 			for(eachSite of eachDistrict.site){
 				if(eachSite.location != undefined){
-					if(eachSite.categroy == criteria){
-						output.push(eachSite);
+					if(criteria == "all" || eachSite.categroy == criteria){
+						one.push(eachSite.title);
+						one.push(eachSite.location.lat);
+						one.push(eachSite.location.lon);
+						one.push(eachSite.category);
+						output.push(one);
+						one = [];
 					}
 				}
 			}
@@ -370,10 +418,10 @@ app.get('/admin/read/attraction',function(req,res){
 				title.push(eachDistrict._id);
 				title.push(eachDistrict.name);
 				title.push(eachSite.title);
-				if(eachDistrict.promote == undefined || eachDistrict.promote != "hot" ){
-					title.push(true);
-				}else{
+				if(eachDistrict.promotion == undefined || eachDistrict.promotion != "hot" ){
 					title.push(false);
+				}else{
+					title.push(ture);
 				}
 				output.push(title);
 				title= [];
@@ -455,8 +503,7 @@ app.post('/admin/create/user',function(req,res){
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.createUser(db,criteria,function(){
-			res.send("<h1>Created</h1>");
-			res.end();
+			res.render('ok.ejs');
 		})
 	})
 	}else{
@@ -464,20 +511,33 @@ app.post('/admin/create/user',function(req,res){
 	}
 })
 
+app.get('/test',function(req,res){
+	var criteria = {"1-name" : "1name"};
+	MongoClient.connect(mongourl,
+		function(err,db) {
+				db.collection('test').update(
+					{"1-main.$.2-name" : "2name"}, 
+					{$set : {"1-main.$.2-issue" : "hot"}}, 
+					function(err,result){				
+						res.send(result);
+						res.end();
+					}
+				);
+	});//end db
+})
 
 app.post('/admin/update/hot',function(req,res){
 	var name = req.body.tick;
 	console.log(name);
-	//var criteria = {$or : {"title" : name[0], "title" : name[1],"title" : name[2]}};
-	var criteria = {"site.title" : name};
+	var criteria = {"site.$.title" : name};
 	console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
-		//db.collection('attraction').update({criteria},
-			//{$set: {"site.promotion" : "hot"}}, 
-			db.collection('district').findOne({criteria},
+		db.collection('district').update({criteria},
+			{$set: {"site.promotion" : "hot"}}, 
 			function(err,result){
-				console.log(result);
+				res.send(result);
+				res.end();
 			});
 	});//end db
 })
