@@ -49,14 +49,27 @@ module.exports ={
 	},
 
 	getDistrictList : function(db,callback){
-		var district = [];
+		var output = [];
 		var cursor = db.collection('district').find({},{'name':1,_id:1});
 			cursor.each(function(err,doc){
 				if(doc!= null){
-					district.push(doc);
+					output.push(doc);
 				}
 				else{
-					callback(district);
+					callback(output);
+				}
+			});
+	},
+
+	getUserList : function(db,callback){
+		var output = [];
+		var cursor = db.collection('user').find({},{'name':1,_id:0});
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					output.push(doc);
+				}
+				else{
+					callback(output);
 				}
 			});
 	},
@@ -96,13 +109,14 @@ module.exports ={
 					output.push(doc);
 				}
 				else{
-					callback(district);
+					callback(outputs);
 				}
 			});
 	},
 
-	getHotSite : function(db,callback){
-		var output
+	getHotSite : function(data){
+		var output =[];
+		
 	}
 
 

@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(fileUpload());
 app.use(session({cookieName: 'session',keys: ['IT9']}));
-
+express.static(__dirname + '/public');
 //login
 //api: -d'name="abc"&pw="123"'
 app.post('/login',function(req,res) {
@@ -120,7 +120,7 @@ app.get('/test/create/user/:name/:pw',function(req,res){
 								"lon" : 0
 								}
 						};
-	var criteria = {"name" = req.params.name};
+	var criteria = {"name" : req.params.name};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
@@ -455,7 +455,7 @@ app.post('/admin/login', function(req,res){
 	var criteria = {"name" : ac , "password" : pw};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
-			findUser(db,criteria,function(result){
+			func.findUser(db,criteria,function(result){
 				if(result == null){
 					res.send("null");
 				}//no user
@@ -467,14 +467,7 @@ app.post('/admin/login', function(req,res){
 	});//end db
 })
 
-function findUser(db,criteria,callback) {
-	db.collection('user').findOne(criteria,
-		function(err,result) {
-			assert.equal(err,null);
-			callback(result);
-		}//end function(err,result) {
-	)//end find
-}
+
 
 app.get('/admin',function(req,res){
 	if(req.session.authenticated != true){
@@ -511,6 +504,20 @@ app.post('/admin/create/user',function(req,res){
 	}
 })
 
+
+app.get('/admin/read/user',function(req,res){
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+		func.getUserList(db,function(result){
+			res.render('users.ejs',{result:result});
+			db.close();
+		});
+	});//end db
+	
+})
+
+
+///?????
 app.get('/test',function(req,res){
 	var criteria = {"1-name" : "1name"};
 	MongoClient.connect(mongourl,
@@ -541,6 +548,10 @@ app.post('/admin/update/hot',function(req,res){
 			});
 	});//end db
 })
+
+app.get('/admin/test',function(req,res){
+	res.render('admin/admin.ejs');
+});
 
 app.listen(process.env.PORT ||8090, function() {
   console.log('Server is on.');

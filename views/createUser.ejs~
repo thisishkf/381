@@ -8,6 +8,7 @@
 <%- include menu.ejs %>
 
 <% if(msg.length >2){ %>
+<div class="main">
 <h2><%= msg %></h2>
 <% } %>
 <table>
@@ -28,7 +29,7 @@
 	</tr>
 
 	<tr>
-		<td>Confrim Pawword:</td>
+		<td>Confrim Password:</td>
 		<td>
 			<input name="cPassword" type="password"/>
 		</td>
@@ -41,5 +42,6 @@
 
 </from>
 </table>
+</div>
 </body>
 </html>

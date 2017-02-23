@@ -61,6 +61,19 @@ module.exports ={
 			});
 	},
 
+	getUserList : function(db,callback){
+		var output = [];
+		var cursor = db.collection('user').find({},{'name':1,_id:0});
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					output.push(doc);
+				}
+				else{
+					callback(output);
+				}
+			});
+	},
+
 	addDistrict : function(db,criteria,doc,callback){
 		db.collection('district').update(criteria,{$push: doc},
 			function(err,result) {
@@ -104,7 +117,16 @@ module.exports ={
 	getHotSite : function(data){
 		var output =[];
 		
-	}
+	},
+
+ findUser : function(db,criteria,callback) {
+	db.collection('user').findOne(criteria,
+		function(err,result) {
+			assert.equal(err,null);
+			callback(result);
+		}//end function(err,result) {
+	)//end find
+}
 
 
 

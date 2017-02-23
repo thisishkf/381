@@ -1,0 +1,60 @@
+#fixedAds {
+  height: 320px;
+  width: 250px;
+  margin-top: 80px;
+  margin-left: 10px;
+	 background-color: rgba(166, 166, 166, 0.6);
+border-radius: 20px;
+  font-family: Impact, Charcoal, sans-serif;
+  position: fixed;
+  
+  z-index: 100;
+}
+
+
+.ads {
+  position: relative;
+  margin-left: 0px;
+  margin-top: 0px;
+}	  
+
+#ads_video {
+	height: 200px;
+	width: 250px;
+}
+
+
+#user_icon {
+
+  	display: inline;
+		max-height: 50px;
+		max-width: 50px;
+		min-height: 50px;
+		min-width: 50px;
+		float: left;
+		border-radius: 50%;
+		overflow: hidden;
+
+}
+#profile {
+  position: relative;
+  margin:  5%;
+
+}
+#detail {
+  float:right;
+  margin: 2% 5%;
+}
+#close {
+   position: relative;
+   margin: 2%;
+   float:right;
+   height: 20px;
+   width: 20px;
+}
+
+#tutorLink {
+   height: 200px;
+   margin-top: 30px;
+}
+

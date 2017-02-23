@@ -1,0 +1,136 @@
+<html>
+	<head>
+		<title>Admin"s Stage</title>
+		<link rel="stylesheet" href="assets/css/adminStageCss.css" />	
+		<link rel="stylesheet" href="assets/css/rate.css" />
+		<script>	
+
+	
+			var menuItem2 ="Display Users";
+			var Item2_url ="adminStageejs#displayUser";
+			var Item2_html5_link = "display-link";
+		
+			var menuItem3 ="Registration Requests";
+			var Item3_url ="adminStageejs#registration";
+			var Item3_html5_link = "registration-link";
+	
+			var menuItem4 = "Messages";
+			var Item4_url = "adminStageejs#message";
+			var Item4_html5_link = "message-link";
+	
+			var menuItem5 = "Statistics";
+			var Item5_url = "adminStageejs#statistics";
+			var Item5_html5_link = "stat-link";
+	
+			var menuItem5 = "advertisment Requests";
+			var Item5_url = "adminStageejs#advertisment";
+			var Item5_html5_link = "ads-link";
+	
+		</script>	
+	</head>
+	
+	<body >
+
+		<!-- Header -->
+		<div id="header">
+			<div class="top">
+				<!-- Back to Home -->
+					<div id="bk2hm">
+						<!-- back to home page -->
+						<a href="indexejs" id="top-link" class="skel-layers-ignoreHref">
+							<span class="icon fa-home icon2"></span>
+						</a>
+						<!-- Log out -->
+						<a href="logoutejs" id="top-link" class="skel-layers-ignoreHref">
+							<span class="icon fa-sign-out iconOut">Log Out</span>
+						</a>						
+					</div>
+
+				<!-- Logo -->
+					<div id="logo">
+						<a href="#about">
+					<div>
+
+					<div class="image avatar48 circle_image"><img src="#" alt="" /></div>
+						<h1 id="title">??</h1>
+						<p style=" font-weight:bold;">Admin</p>
+					</div>
+
+				</div>
+
+			var menuItem1 ="Add New User";
+			var Item1_url ="adminStage.ejs#addUser";
+			var Item1_html5_link = "add-link";
+
+				<!-- Nav -->
+				<nav id="nav">
+					<ul>
+						<li>
+							<a href="adminStage.ejs#addUser" id="add-link" class="skel-layers-ignoreHref">
+								<span class="icon  fa-users">"Add New User"</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="<%=Item2_url%>" id="<%=Item2_html5_link%>" class="skel-layers-ignoreHref">
+								<span class="icon fa-th"><%= menuItem2%></span>
+							</a>
+						</li>
+						
+						<li>
+							<a href="<%=Item3_url%>" id="<%=Item3_html5_link%>" class="skel-layers-ignoreHref">
+								<span class="icon fa-bell"><%= menuItem3%></span>
+							</a>
+						</li>
+
+						<li>
+							<a href="<%=Item4_url%>" id="<%=Item4_html5_link%>" class="skel-layers-ignoreHref">
+								<span class="icon fa-envelope-o"><%= menuItem4%></span>
+							</a>
+						</li>
+						
+						<li>
+							<a href="<%=Item5_url%>" id="<%=Item5_html5_link%>" class="skel-layers-ignoreHref">
+								<span class="icon fa-line-chart"><%= menuItem5%></span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+
+		<!-- Main -->
+			<div id="main">
+				
+				<!-- Add New Users --> 				
+				<section id="addUser" class="one dark">
+
+				</section>
+					
+
+				<!-- Display All Users --> 
+					<section id="displayUser" class="two">
+						
+					</section>
+
+
+				<!-- Registration Requests --> 
+					<section id="registration" class="three" >
+
+					</section>
+
+				<!-- Message -->
+					<section id="message" class="four" >
+
+					</section>
+
+				<!-- Statistics -->
+					<section id="statistics" class="five" >
+
+					</section>			
+					
+			</div>
+
+	</body>
+</html>

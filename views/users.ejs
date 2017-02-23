@@ -1,0 +1,16 @@
+<html>
+	<head>
+		<script>var i =0;</script>
+		<style><%- include style.css %></style>
+	</head>
+<body>
+
+<%- include menu.ejs %>
+<table>
+<% for(i=0;i<result.length;i++){%>
+<tr><th>ID</th><th></th></tr>
+<tr><td><%=i%></td><td><%= result.name %></td></tr>
+<% } %>
+</table>
+</body>
+</html>

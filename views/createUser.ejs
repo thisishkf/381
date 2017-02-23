@@ -8,8 +8,10 @@
 <%- include menu.ejs %>
 
 <% if(msg.length >2){ %>
+
 <h2><%= msg %></h2>
 <% } %>
+<div class="main">
 <table>
 <form action="/admin/create/user" method="POST">
 
@@ -41,5 +43,6 @@
 
 </from>
 </table>
+</div>
 </body>
 </html>
