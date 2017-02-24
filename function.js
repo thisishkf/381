@@ -1,5 +1,6 @@
 var assert = require('assert');
 var fs = require('fs');
+var ObjectId = require('mongodb').ObjectID;
 module.exports ={
 	loginUser : function(db, user,status){
 		var doc = {"Name" : user};
@@ -50,7 +51,7 @@ module.exports ={
 
 	getDistrictList : function(db,callback){
 		var output = [];
-		var cursor = db.collection('district').find({},{'name':1,_id:1});
+		var cursor = db.collection('district').find({},{'district':1,_id:1});
 			cursor.each(function(err,doc){
 				if(doc!= null){
 					output.push(doc);
@@ -74,14 +75,11 @@ module.exports ={
 			});
 	},
 
-	addDistrict : function(db,criteria,doc,callback){
-		db.collection('district').update(criteria,{$push: doc},
+	addDistrict : function(db,doc,callback){
+		db.collection('district').insertOne(doc,
 			function(err,result) {
-				if (err) {
-					result = err;
-					console.log("update: " + JSON.stringify(err));
-				}
-				callback(result);
+				assert.equal(err,null);
+				callback();
 			}
 		);
 	},
@@ -114,11 +112,6 @@ module.exports ={
 			});
 	},
 
-	getHotSite : function(data){
-		var output =[];
-		
-	},
-
  findUser : function(db,criteria,callback) {
 	db.collection('user').findOne(criteria,
 		function(err,result) {
@@ -126,7 +119,83 @@ module.exports ={
 			callback(result);
 		}//end function(err,result) {
 	)//end find
-}
+},
+
+
+
+	getweather : function(db,callback){
+		var weather = [];
+		var cursor = db.collection('weather').find().sort({"Date" : 1}).limit(9);
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					weather.push(doc);
+				}
+				else
+				{
+					callback(weather);
+				}
+			});
+},
+	getDistrict : function(db,callback){
+		var district = [];
+		var cursor = db.collection('district').find();
+			cursor.each(function(err,doc){
+				if(doc!= null){
+					district.push(doc);
+				}
+				else
+				{
+					callback(district);
+				}
+		});
+	},
+
+	addWeather : function(db,jsonDoc,callback){
+		db.collection('weather').insert(jsonDoc,
+			function(err,result){
+				callback(err,result);
+		})
+	},
+
+	addHot : function(db,criteria,doc,callback){
+		db.collection('district').update({"_id" : ObjectId(tick)},{$set : {"promotion" : "hot"}},
+			function(result,err){
+				callback(result);
+		})
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

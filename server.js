@@ -20,15 +20,21 @@ var haversine = require('haversine');
 //customized function
 var func = require('./function.js');
 var data = require('./data.js');
-var weatherAPI = require('./schedulingJob.js');
+//var weatherAPI = require('./schedulingJob.js');
 //on-trail function
+
+var districtList =["Islands","Kwai Tsing","North","Sai Kung","Sha Tin","Tai Po","Tsuen Wan","Tuen Mun","Yuen Long","Kowloon City","Kwun Tong","Sham Shui Po","Wong Tai Sin","Yau Tsim Mong","Central & Western","Eastern","Southern","Wan Chai"];
+
+var dis = [];
+var wea = [];
+var data = [dis,wea];
 
 // middlewares
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(fileUpload());
 app.use(session({cookieName: 'session',keys: ['IT9']}));
-express.static(__dirname + '/public');
+
 //login
 //api: -d'name="abc"&pw="123"'
 app.post('/login',function(req,res) {
@@ -79,7 +85,6 @@ app.post('/logout',function(req,res) {
 //api: curl -H 'Content-Type:application/JSON' -d '{"doc" : {"name" : "Sam Ho"}}' -X POST http://localhost:8090/create/user
 
 app.post('/create/user',function(req,res){
-	console.log(req.body);
 	var criteria  ={"name" : req.body.name};
 	var doc = {"name" : req.body.name, 
 							"password" : req.body.password, 
@@ -91,7 +96,6 @@ app.post('/create/user',function(req,res){
 								"lon" : 0
 								}
 						};
-	console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
@@ -159,6 +163,7 @@ console.log(result);
 		});
 	});
 })
+
 //update user information
 app.post('/update/user/info',function(req,res){
 	var doc = req.body.doc;
@@ -182,24 +187,22 @@ app.post('/update/user/info',function(req,res){
 
 
 /*******************district*********************/
-//create attraction
-//tested
 app.post('/admin/create/attraction',function(req,res){
-	var doc = {"site" : 
-							{"title" : req.body.title, 
+	var doc = {	"district" : req.body.district,
+							"title" : req.body.title, 
 							"location":{"lon" : req.body.lon, 
 													"lat" : req.body.lat
 													},  
 							"category" : req.body.cat,
 							"description" : req.body.des,
+							"hours" : req.body.hour,
 							"promotion" : null,
 							"issue" : null,
-							"comment" : []}
+							"comment" : []
 						};
-	var criteria = {"_id" : ObjectId(req.body.district)};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
-		func.addDistrict(db,criteria,doc,function(result){
+		func.addDistrict(db,doc,function(result){
 			res.send(result);
 			db.close();
 		});
@@ -207,13 +210,12 @@ app.post('/admin/create/attraction',function(req,res){
 })
 
 //add comment
-//tested
 //api : curl -X POST -H "Content-Type:application/JSON" -d '{"doc":{"dis" : "588577f3734d1d75e11a7695","title":"Ma On Shan", "content" : "new test","user" : "sam"}}' localhost:8090/api/create/comment
 app.post('/api/create/comment',function(req,res){
 	var income = req.body.doc;
 	var dis = income.dis;
 	var title = income.title;
-	var doc = {	"site.$.comment" :{
+	var doc = {	"comment" :{
 									"content" : income.content,
 									"user"		:	income.user,
 									"date/Time": Date()
@@ -232,23 +234,15 @@ app.post('/api/create/comment',function(req,res){
 //read districtList
 //testes
 app.get('/api/read/districtList',function(req,res){
-	var output = [];
-	for(eachDistrict of data.dis){	
-			output.push(eachDistrict.name);
-	}
-	res.send(output);
+	res.send(districtList);
 })
 
 //read siteList
 //testes
 app.get('/api/read/siteList',function(req,res){
 	var output = [];
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.site != undefined){
-			for(eachSite of eachDistrict.site){
-				output.push(eachSite.title);
-			}
-		}
+	for(eachSite of data[0]){	
+		output.push(eachSite.title);
 	}
 	res.send(output);
 })
@@ -258,13 +252,9 @@ app.get('/api/read/siteList',function(req,res){
 app.get('/api/read/siteList/:name',function(req,res){
 	var name = req.params.name;
 	var output = [];
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.site != undefined){
-			for(eachSite of eachDistrict.site){
-				if(name == eachSite.title){
-					output.push(eachSite);
-				}
-			}
+	for(eachSite of data[0]){	
+		if(name == eachSite.title){
+			output.push(eachSite);
 		}
 	}
 	if(output.length <1)
@@ -278,8 +268,8 @@ app.get('/api/read/siteList/:name',function(req,res){
 app.get('/api/read/districtList/:district',function(req,res){
 	var district = req.params.district;
 	var output = [];
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.name ==district){
+	for(eachDistrict of data[0]){	
+		if(eachDistrict.district ==district){
 			output.push(eachDistrict);
 		}
 	}
@@ -294,14 +284,9 @@ app.get('/api/read/districtList/:district',function(req,res){
 app.get('/api/read/:site/comment',function(req,res){
 	var site = req.params.site;
 	var output = [];
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.site != undefined){
-			for(eachSite of eachDistrict.site){
-				if(eachSite.title == site && eachSite.comment != undefined){
-					for(eachComment of eachSite.comment){
-						output.push(eachComment);
-					}
-				}
+	for(eachSite of data[0]){	
+		if(eachSite.title == site && eachSite.comment != undefined){
+			for(eachComment of eachSite.comment){					output.push(eachComment);
 			}
 		}
 	}
@@ -317,19 +302,13 @@ app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
 	var start ={latitude: req.params.lat, longitude: req.params.lon};
 	var end ={latitude: 0, longitude: 0};
 	var output =[];
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.site != undefined){
-			for(eachSite of eachDistrict.site){
-				if(eachSite.location != undefined){
-					if(eachSite.categroy == criteria){
-						end.latitude = parseInt(eachSite.location.lat);
-						end.longitude = parseInt(eachSite.location.lon);
-						console.log(haversine(start,end));
-						if(haversine(start,end) <=100){
-							output.push(eachSite);
-						}
-					}
-				}
+	for(eachSite of data[0]){	
+		if(eachSite.categroy == criteria){
+			end.latitude = parseInt(eachSite.location.lat);
+			end.longitude = parseInt(eachSite.location.lon);
+			console.log(haversine(start,end));
+			if(haversine(start,end) <=100){
+				output.push(eachSite);
 			}
 		}
 	}
@@ -344,20 +323,14 @@ app.get('/api/read/map/:category', function(req,res){
 	var criteria = req.params.category;
 	var output =[];
 	var one =[];
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.site != undefined){
-			for(eachSite of eachDistrict.site){
-				if(eachSite.location != undefined){
-					if(criteria == "all" || eachSite.categroy == criteria){
-						one.push(eachSite.title);
-						one.push(eachSite.location.lat);
-						one.push(eachSite.location.lon);
-						one.push(eachSite.category);
-						output.push(one);
-						one = [];
-					}
-				}
-			}
+	for(eachSite of data[0]){	
+		if(criteria == "all" || eachSite.categroy == criteria){
+			one.push(eachSite.title);
+			one.push(eachSite.location);
+			one.push(eachSite.location);
+			one.push(eachSite.category);
+			output.push(one);
+			one = [];
 		}
 	}
 	if(output.length <1)
@@ -369,7 +342,7 @@ app.get('/api/read/map/:category', function(req,res){
 /*******************weather API*********************/
 //tested
 app.get('/api/read/weather', function(req,res) {
-		res.send(data.weather);
+		res.send(data[1]);
 })
 
 /*******************Home Page*********************/
@@ -378,22 +351,18 @@ app.get('/api/read/home', function(req,res) {
 	var hot = [];
 	var weather =[];
 
-	weather.push(data.weather);
+	weather.push(data[1]);
 
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.site != undefined){
-			for(eachSite of eachDistrict.site){
-				if(eachSite.location != undefined && eachSite.promotion != undefined){
-					if(eachSite.promotion == "hot"){
-						hot.push(eachSite);
-					}
-				}
-			}
+	for(eachSite of data[0]){				
+		if(eachSite.promotion == "hot"){
+			hot.push(eachSite);
 		}
 	}
 
-	
-
+	output.push(weather);
+	output.push(hot);
+	res.send(output);
+	res.end();
 })
 
 /*******************UI*********************/
@@ -402,7 +371,7 @@ app.get('/admin/create/attraction',function(req,res){
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.getDistrictList(db,function(result){
-			res.render('createAttraction.ejs',{result:result});
+			res.render('createAttraction.ejs',{result:result,districtList:districtList});
 			db.close();
 		});
 	});//end db
@@ -412,21 +381,17 @@ app.get('/admin/create/attraction',function(req,res){
 app.get('/admin/read/attraction',function(req,res){
 	var output = [];
 	var title = [];
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.site != undefined){
-			for(eachSite of eachDistrict.site){
-				title.push(eachDistrict._id);
-				title.push(eachDistrict.name);
-				title.push(eachSite.title);
-				if(eachDistrict.promotion == undefined || eachDistrict.promotion != "hot" ){
-					title.push(false);
-				}else{
-					title.push(ture);
-				}
-				output.push(title);
-				title= [];
-			}
+	for(eachDistrict of data[0]){	
+		title.push(eachDistrict._id);
+		title.push(eachDistrict.district);
+		title.push(eachDistrict.title);
+		if(eachDistrict.promotion != "hot" ){
+			title.push(false);
+		}else{
+			title.push(true);
 		}
+		output.push(title);
+		title= [];
 	}
 	res.render('attraction.ejs',{output:output});
 })
@@ -434,13 +399,9 @@ app.get('/admin/read/attraction',function(req,res){
 //tested
 app.get('/admin/read/site/:name',function(req,res){
 	var name = req.params.name;
-	for(eachDistrict of data.dis){	
-		if(eachDistrict.site != undefined){
-			for(eachSite of eachDistrict.site){
-				if(name == eachSite.title){
-					res.render('site.ejs',{output:eachSite});
-				}
-			}
+	for(eachDistrict of data[0]){	
+		if(eachDistrict.title == name){
+			res.render('site.ejs',{output:eachDistrict});
 		}
 	}
 })
@@ -477,7 +438,7 @@ app.get('/admin',function(req,res){
 	}
 })
 
-app.get('/logout',function(req,res){
+app.get('/admin/logout',function(req,res){
 	req.session.authendication = false;
 	res.redirect('/admin/login');
 })
@@ -510,49 +471,208 @@ app.get('/admin/read/user',function(req,res){
 		assert.equal(err,null);
 		func.getUserList(db,function(result){
 			res.render('users.ejs',{result:result});
+			console.log(result);
 			db.close();
 		});
-	});//end db
-	
-})
-
-
-///?????
-app.get('/test',function(req,res){
-	var criteria = {"1-name" : "1name"};
-	MongoClient.connect(mongourl,
-		function(err,db) {
-				db.collection('test').update(
-					{"1-main.$.2-name" : "2name"}, 
-					{$set : {"1-main.$.2-issue" : "hot"}}, 
-					function(err,result){				
-						res.send(result);
-						res.end();
-					}
-				);
-	});//end db
+	});//end db	
 })
 
 app.post('/admin/update/hot',function(req,res){
-	var name = req.body.tick;
-	console.log(name);
-	var criteria = {"site.$.title" : name};
-	console.log(criteria);
+	var tick = req.body.tick;
+	console.log(tick);
+	var doc = {"promotion" : "hot"};
+	var criteria = {"_id" : ObjectId(tick)};
+
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
-		db.collection('district').update({criteria},
-			{$set: {"site.promotion" : "hot"}}, 
-			function(err,result){
-				res.send(result);
-				res.end();
-			});
-	});//end db
+		func.addHot(db,criteria,doc,function(result){
+			console.log(result);
+			db.close();
+			res.end();
+		});
+	});//end db	
 })
 
-app.get('/admin/test',function(req,res){
-	res.render('admin/admin.ejs');
-});
 
+
+
+
+
+
+
+
+
+/*******************schedule Job*********************/
+var Job = require('cron').CronJob;
+var scheduleTime = '0 0 0 */1 * *';
+var scheduleTime2 = '0 30 */1 * * *';
+
+var weatherAPI = new Job(scheduleTime , function() {	
+	var loopCount =1
+	var content = "";
+	var options = {
+    host: 'www.hko.gov.hk',
+    port: 80,
+    path: '/textonly/v2/forecast/nday.htm',
+    method: 'GET'
+};
+
+	console.log(Date() + " Create weather API");
+
+  var apiReq = http.request(options, function(apiRes) {
+	    apiRes.setEncoding('utf8');
+
+	    apiRes.on('data', function (chunk) {
+				if(chunk.includes("Date")){
+					content+= chunk.substring(chunk.indexOf("Date/Month"));
+				}
+				if(content.includes("</pre>")){
+					content=content.substring(0,chunk.indexOf("</pre>")-1);
+				}
+	    });//end apiRes.on('data);
+
+apiRes.on('end', function (chunk) {
+	var arg = [];
+	var buffer = "";
+	var posOfDate=0, endOfDate=0;
+	var posOfWind=0, endOfWind=0;
+	var posOfWea =0, endOfWea =0;
+	var posOfTemp=0, endOfTemp=0;
+	var posOfRH  =0, endOfRH  =0;
+	var dayint = 1;
+	var docArray = [];
+	var doc ={};
+				
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+		db.collection('weather').remove({},
+			function(err,result) {//callback after delete
+				console.log("Reset weather Database");
+					
+		while(loopCount >0){
+			//get date
+			posOfDate = content.indexOf(" ")+1;
+			endOfDate = content.indexOf(")")+1;
+			buffer = content.substring(posOfDate,endOfDate);
+			arg.push(buffer);
+			content = content.substring(content.indexOf("Wind: "));
+	
+			//get wind
+			posOfWind = content.indexOf(": ")+2;
+			endOfWind = content.indexOf(".");
+			buffer = content.substring(posOfWind,endOfWind);
+			buffer = buffer.replace("\n", " ");
+			arg.push(buffer);
+			content = content.substring(content.indexOf("Weather: "));
+
+			//get weather
+			posOfWea = content.indexOf(": ")+2;
+			endOfWea = content.indexOf(".\n")+1;
+			buffer = content.substring(posOfWea,endOfWea);
+			buffer = buffer.replace("\n", " ");
+			arg.push(buffer);
+			content = content.substring(content.indexOf("Temp Range: "));
+
+			//get temp
+			posOfTemp = content.indexOf(": ")+2;
+			endOfTemp = content.indexOf("C");
+			buffer = content.substring(posOfTemp,endOfTemp);
+			arg.push(buffer);
+			content = content.substring(content.indexOf("R.H. Range: "));
+
+			//get RH
+			postOfRH = content.indexOf(": ")+2;
+			endOfRH = content.indexOf("\n");
+			buffer = content.substring(postOfRH, endOfRH);
+			buffer = buffer.replace("Per Cent", "%");
+			arg.push(buffer);
+
+			//get icon
+			var str = "Day " + dayint +" cartoon no. "
+			dayint++;
+			buffer = content.substring(content.indexOf(str) + str.length ,content.indexOf(str) + str.length+2);
+			arg.push(buffer);
+			//end one Date	
+
+			doc = {	"Date" : arg[0],
+						"Wind" : arg[1],
+						"Weather" : arg[2],
+						"Temp Range" : arg[3],
+						"RH Range" : arg[4],
+						"Icon" : arg[5]
+						};
+			docArray.push(doc);
+						
+				/******prepare document*****/										
+			if(content.indexOf("Date/Month ") >0){
+				arg = [];
+				content = content.substring(content.indexOf("Date/Month "));
+			}
+			else {
+				console.log("Start Import Data!");
+				loopCount=0;
+				func.addWeather(db,docArray,function(err,result){
+					if (err) {
+						console.log("insertOne error: " + JSON.stringify(err));
+					} 
+					else {
+						console.log("Create success: " + result);
+						data =[];
+						func.getDistrict(db,function(district){
+								data.push(district);
+								func.getweather(db,function(weather){
+									wea = weather;
+									data.push(district);
+								})
+						})//getDistrict
+					}
+				})
+			}				
+		}//end while loop
+})//end remove
+})//end MongoClient.connect
+
+	    });//end of apiRes.on('end')
+
+	    apiReq.on('error', function(e) {
+		console.log('Problem with request: ' + e.message);
+	    });
+	});
+	apiReq.end();
+ }
+).start();
+
+
+var bufferAll = new Job(scheduleTime2 , function() {	
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+		console.log("Buffer All: " + Date());
+		data =[];
+		func.getDistrict(db,function(district){
+			data.push(district);
+			func.getweather(db,function(weather){
+				db.close();
+				data.push(weather);
+			})
+		})
+	})
+}).start();
+/*******************end schedule Job*********************/
+
+/*******************Start server*********************/
 app.listen(process.env.PORT ||8090, function() {
-  console.log('Server is on.');
+	MongoClient.connect(mongourl,function(err,db) {
+		data =[];
+		assert.equal(err,null);
+		console.log("Preparing ...");
+		func.getDistrict(db,function(district){
+			data.push(district);
+			func.getweather(db,function(weather){
+				db.close();
+				data.push(weather);
+					console.log("Start: " + Date());
+ 					console.log('Server is on.');
+			})
+		})
+	})
 });

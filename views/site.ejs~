@@ -4,10 +4,11 @@
 <body>
 	<table>
 			<tr><td>Title</td><td><%=output.title%></td></tr>
-			<tr><td colspan="2">Location</td></tr>
+			<tr><td colspan="2">Location</td><td></td></tr>
 			<tr><td>Lat</td><td><%=output.location.lat%></td></tr>
 			<tr><td>Lon</td><td><%=output.location.lon%></td></tr>
 			<tr><td>Description</td><td><%=output.description%></td></tr>
+			<tr><td>Opening Hours</td><td><%=output.hours%></td></tr>
 	</table>
 </body>
 
