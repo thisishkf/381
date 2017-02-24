@@ -45,13 +45,16 @@ app.post('/login',function(req,res) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
 			if(result == null){
-				res.end("Invalid User Name!");
+				res.send("Invalid User Name!");
+				res.end();
 			}//no user
 			else if(result.Name == user && result.Password == pw && !result.Active){
-				res.end('valid');
+				res.send('Valid');
+				res.end();
 				func.loginUser(db,result.ID,true);
 			}else{
-				res.end('Invalid Request');
+				res.send('Invalid Request');
+				res.end();
 			}
 		db.close();
 		});

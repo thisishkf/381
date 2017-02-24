@@ -45,13 +45,16 @@ app.post('/login',function(req,res) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
 			if(result == null){
-				res.end("Invalid User Name!");
+				res.send("Invalid User Name!");
+				res.end();
 			}//no user
 			else if(result.Name == user && result.Password == pw && !result.Active){
-				res.end('valid');
+				res.send('valid');
+				res.end();
 				func.loginUser(db,result.ID,true);
 			}else{
-				res.end('Invalid Request');
+				res.send('Invalid Request');
+				res.end();
 			}
 		db.close();
 		});
@@ -322,15 +325,9 @@ app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
 app.get('/api/read/map/:category', function(req,res){
 	var criteria = req.params.category;
 	var output =[];
-	var one =[];
 	for(eachSite of data[0]){	
 		if(criteria == "all" || eachSite.categroy == criteria){
-			one.push(eachSite.title );
-			one.push(eachSite.location);
-			one.push(eachSite.location);
-			one.push(eachSite.category);
-			output.push(one);
-			one = [];
+			output.push(eachSite);
 		}
 	}
 	if(output.length <1)
