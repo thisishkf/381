@@ -325,7 +325,7 @@ app.get('/api/read/map/:category', function(req,res){
 	var one =[];
 	for(eachSite of data[0]){	
 		if(criteria == "all" || eachSite.categroy == criteria){
-			one.push(eachSite.title);
+			one.push(eachSite.title );
 			one.push(eachSite.location);
 			one.push(eachSite.location);
 			one.push(eachSite.category);
@@ -388,7 +388,7 @@ app.get('/admin/read/attraction',function(req,res){
 		if(eachDistrict.promotion != "hot" ){
 			title.push(false);
 		}else{
-			title.push(ture);
+			title.push(true);
 		}
 		output.push(title);
 		title= [];
@@ -482,6 +482,7 @@ app.post('/admin/update/hot',function(req,res){
 	console.log(tick);
 	var doc = {"promotion" : "hot"};
 	var criteria = {"_id" : ObjectId(tick)};
+
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.addHot(db,criteria,doc,function(result){

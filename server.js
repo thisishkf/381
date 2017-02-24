@@ -322,15 +322,9 @@ app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
 app.get('/api/read/map/:category', function(req,res){
 	var criteria = req.params.category;
 	var output =[];
-	var one =[];
 	for(eachSite of data[0]){	
 		if(criteria == "all" || eachSite.categroy == criteria){
-			one.push(eachSite.title);
-			one.push(eachSite.location);
-			one.push(eachSite.location);
-			one.push(eachSite.category);
-			output.push(one);
-			one = [];
+			output.push(eachSite);
 		}
 	}
 	if(output.length <1)
