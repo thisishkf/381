@@ -20,6 +20,7 @@ var haversine = require('haversine');
 //customized function
 var func = require('./function.js');
 var data = require('./data.js');
+var mtr = require('./mtr.js');
 //var weatherAPI = require('./schedulingJob.js');
 //on-trail function
 
@@ -40,7 +41,7 @@ app.use(session({cookieName: 'session',keys: ['IT9']}));
 app.post('/login',function(req,res) {
 	var name = req.body.name;
 	var pw = req.body.pw;	
-	var criteria = {"Name" : name};
+	var criteria = {"name" : name};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
@@ -48,7 +49,7 @@ app.post('/login',function(req,res) {
 				res.send("Invalid User Name!");
 				res.end();
 			}//no user
-			else if(result.Name == user && result.Password == pw && !result.Active){
+			else if(result.name == user && result.password == pw && !result.Active){
 				res.send('Valid');
 				res.end();
 				func.loginUser(db,result.ID,true);
@@ -509,10 +510,14 @@ console.log("1st hot");
 	
 })
 
-
-
-
-
+//*****test*****//
+var mtrLine = ["AEL","DRL","EAL","ISL","KTL","MOL","TCL","TKL","TWL","WRL","SIL"];
+app.get('/mtr/:start/:end',function(req,res){
+	var n = mtrLine[0];
+	console.log(n);
+	res.send(mtr.n);
+	res.end();
+})
 
 
 

@@ -20,6 +20,7 @@ var haversine = require('haversine');
 //customized function
 var func = require('./function.js');
 var data = require('./data.js');
+var mtr = require('./mtr.js');
 //var weatherAPI = require('./schedulingJob.js');
 //on-trail function
 
@@ -475,10 +476,6 @@ app.get('/admin/read/user',function(req,res){
 })
 
 app.post('/admin/update/hot',function(req,res){
-	
-
-	
-
 	var tick = req.body.tick;
 	if(tick.length != 3){
 		res.send("please check 3 boxes");
@@ -492,7 +489,9 @@ app.post('/admin/update/hot',function(req,res){
 		MongoClient.connect(mongourl,function(err,db) {
 			assert.equal(err,null);
 			func.rmHot(db,function(result){
+console.log("reset hot");
 				func.addHot(db,criteria1,function(result){
+console.log("1st hot");
 					func.addHot(db,criteria2,function(result){
 						func.addHot(db,criteria3,function(result){
 							//buffer
@@ -511,10 +510,14 @@ app.post('/admin/update/hot',function(req,res){
 	
 })
 
-
-
-
-
+//*****test*****//
+var mtrLine = ["AEL","DRL","EAL","ISL","KTL","MOL","TCL","TKL","TWL","WRL","SIL"];
+app.get('/mtr/:start/:end',function(req,res){
+	var n = mtrLine[0];
+	console.log(n);
+	res.send(mtr.n);
+	res.end();
+})
 
 
 
