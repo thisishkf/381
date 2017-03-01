@@ -476,18 +476,37 @@ app.get('/admin/read/user',function(req,res){
 
 app.post('/admin/update/hot',function(req,res){
 	var tick = req.body.tick;
-	console.log(tick);
-	var doc = {"promotion" : "hot"};
-	var criteria = {"_id" : ObjectId(tick)};
+	if(tick.length != 3){
+		res.send("please check 3 boxes");
+		res.end();
+	}
+	else {
+		var criteria1 = {"_id" :  ObjectId(tick[0])};
+		var criteria2 = {"_id" :  ObjectId(tick[1])};
+		var criteria3 = {"_id" :  ObjectId(tick[2])};
 
-	MongoClient.connect(mongourl,function(err,db) {
-		assert.equal(err,null);
-		func.addHot(db,criteria,doc,function(result){
-			console.log(result);
-			db.close();
-			res.end();
-		});
-	});//end db	
+		MongoClient.connect(mongourl,function(err,db) {
+			assert.equal(err,null);
+			func.rmHot(db,function(result){
+console.log("reset hot");
+				func.addHot(db,criteria1,function(result){
+console.log("1st hot");
+					func.addHot(db,criteria2,function(result){
+						func.addHot(db,criteria3,function(result){
+							//buffer
+							func.getDistrict(db,function(district){
+									data.push(district);
+									db.close();
+									res.render('ok.ejs');
+								});		
+						});
+					});
+				});
+			});
+		});//end db	
+	}
+
+	
 })
 
 
@@ -658,10 +677,10 @@ var bufferAll = new Job(scheduleTime2 , function() {
 
 /*******************Start server*********************/
 app.listen(process.env.PORT ||8090, function() {
+	console.log("Preparing ...");
 	MongoClient.connect(mongourl,function(err,db) {
 		data =[];
 		assert.equal(err,null);
-		console.log("Preparing ...");
 		func.getDistrict(db,function(district){
 			data.push(district);
 			func.getweather(db,function(weather){

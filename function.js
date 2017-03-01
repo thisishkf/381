@@ -157,13 +157,19 @@ module.exports ={
 		})
 	},
 
-	addHot : function(db,criteria,doc,callback){
-		db.collection('district').update({"_id" : ObjectId(tick)},{$set : {"promotion" : "hot"}},
+	addHot : function(db,criteria,callback){
+		db.collection('district').update(criteria,{$set : {"promotion" : "hot"}},
+			function(result,err){
+				callback(result);
+		})
+	},
+
+	rmHot : function(db,callback){
+		db.collection('district').update({"promotion" : "hot"},{$set : {"promotion" : null}},
 			function(result,err){
 				callback(result);
 		})
 	}
-
 
 
 
