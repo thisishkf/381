@@ -49,7 +49,7 @@ app.post('/login',function(req,res) {
 				res.send("Invalid User Name!");
 				res.end();
 			}//no user
-			else if(result.name == user && result.password == pw && !result.Active){
+			else if(result.name == name && result.password == pw && !result.Active){
 				res.send('Valid');
 				res.end();
 				func.loginUser(db,result.ID,true);
@@ -65,7 +65,7 @@ app.post('/login',function(req,res) {
 //logout
 app.post('/logout',function(req,res) {
 	var user = req.body.name;
-	var criteria = {"Name" : user};
+	var criteria = {"name" : user};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
@@ -511,16 +511,62 @@ console.log("1st hot");
 })
 
 //*****test*****//
-var mtrLine = ["AEL","DRL","EAL","ISL","KTL","MOL","TCL","TKL","TWL","WRL","SIL"];
+/*var mtrLine = [mtr.AEL,mtr.DRL,mtr.EAL,mtr.ISL,mtr.KTL,mtr.MOL,mtr.TCL,mtr.TKL,mtr.TWL,mtr.WRL,mtr.SIL];
 app.get('/mtr/:start/:end',function(req,res){
-	var n = mtrLine[0];
-	console.log(n);
-	res.send(mtr.n);
+	var start = req.params.start;
+	var StartStation = {};
+	var end = req.params.end;
+	var endStation = {};
+	var result =0;
+	for(line of mtrLine){
+		for(station of line){
+			if(station.name == start){
+				startStation = station;
+			}else if (station.name == end){
+				endStation = station;
+			}
+		}
+	}
+	if(startStation.line == endStation.line){
+		result = startStation.sequence - endStation.sequence;
+	}else if(startStation.line == endStation.interchange){
+		for(line of mtrLine){for(station of line){	
+			if(station.interchange != null){
+				for(line of mtrLine){for(station of line){
+					
+				}}	
+			}
+	}}
+	if (result <0){
+		result = result -2*(result);
+	}
+	res.send(JSON.stringify(startStation) + "<br/>" + JSON.stringify(endStation)+ "<br/>"+result);
 	res.end();
 })
 
+function nextInterchange(start,end,mtrLine){
+	for(line of mtrLine){
+		if(line.name == end){
+			if(end.sequence > start.sequence){
+				return end.sequence - start.sequence;
+			}else{
+				return start.sequence -end.sequence;
+			}
+		}
+	
+		if(line.interchange != null && line.name != start){
+			if(start.sequence > line.sequence){
+				return start.sequence - line.sequence + nextInterchange(line.name,end,);
+			}else{
+				return line.sequence - start.sequence + nextInterchange(line.name,end,);
+			}			
+			
+		}else if() {
 
-
+		}
+	}
+}
+*/
 
 
 /*******************schedule Job*********************/

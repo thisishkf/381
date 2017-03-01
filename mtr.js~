@@ -130,4 +130,16 @@ exports.TCL = TCL;
 exports.TKL = TKL;
 exports.TWL = TWL;
 exports.WRL = WRL;
-exports.SIL = SRL;
+exports.SIL = SIL;
+/*var out =[];
+out.push(DRL);
+out.push(EAL);
+out.push(ISL);
+out.push(KTL);
+out.push(MOL);
+out.push(TCL);
+out.push(TKL);
+out.push(TWL);
+out.push(WRL);
+out.push(SIL);*/
+

@@ -12,15 +12,6 @@ module.exports ={
 		)//end find
 	},
 
-	findUser : function(db,criteria,callback) {
-		db.collection('user').findOne(criteria,
-			function(err,result) {
-				assert.equal(err,null);
-				callback(result);
-			}//end function(err,result) {
-		)//end findOne
-	},
-
 	getUserInfo : function(res,db,criteria) {
 		db.collection('user').findOne(criteria,{"Password": 0},
 			function(err,result) {
