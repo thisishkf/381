@@ -17,7 +17,8 @@ var EAL =[{"line" : "EAL", "name" : "Lo Wu", "sequence" : "1", "interchange" : n
 {"line" : "EAL", "name" : "Fo Tan", "sequence" : "7", "interchange" : null },
 {"line" : "EAL", "name" : "Sha Tin", "sequence" : "8", "interchange" : null },
 {"line" : "EAL", "name" : "Tai Wai", "sequence" : "9", "interchange" : "MOL" },
-{"line" : "EAL", "name" : "Kowloon Tong", "sequence" : "10", "interchange" : ["KTL","WRL"] },
+{"line" : "EAL", "name" : "Kowloon Tong", "sequence" : "10", "interchange" : "WRL" },
+{"line" : "EAL", "name" : "Kowloon Tong", "sequence" : "10", "interchange" : "KTL" },
 {"line" : "EAL", "name" : "Mong Kok East", "sequence" : "11", "interchange" : null },
 {"line" : "EAL", "name" : "Hung Hom", "sequence" : "12", "interchange" : null }];
 
@@ -32,7 +33,8 @@ var ISL =[{"line" : "ISL", "name" : "Chai Wan", "sequence" : "1", "interchange" 
 {"line" : "ISL", "name" : "Tin Hau", "sequence" : "9", "interchange" : null },
 {"line" : "ISL", "name" : "Causeway Bay", "sequence" : "10", "interchange" : null },
 {"line" : "ISL", "name" : "Wan Chal", "sequence" : "11", "interchange" : null },
-{"line" : "ISL", "name" : "Admiralty", "sequence" : "12", "interchange" : ["SIL","TWL"] },
+{"line" : "ISL", "name" : "Admiralty", "sequence" : "12", "interchange" : "SIL" },
+{"line" : "ISL", "name" : "Admiralty", "sequence" : "12", "interchange" : "TWL" },
 {"line" : "ISL", "name" : "Central", "sequence" : "13", "interchange" : "TWL" },
 {"line" : "ISL", "name" : "Sheung Wan", "sequence" : "14", "interchange" : null },
 {"line" : "ISL", "name" : "Sai Ying Pun", "sequence" : "15", "interchange" : null },
@@ -99,7 +101,8 @@ var TWL = [{"line" : "TWL", "name" : "Tsuen Wan", "sequence" : "1", "interchange
 {"line" : "TWL", "name" : "Yau Ma Tei", "sequence" : "12", "interchange" : "KTL" },
 {"line" : "TWL", "name" : "Jordan", "sequence" : "13", "interchange" : null },
 {"line" : "TWL", "name" : "Tsim Sha Tsui", "sequence" : "14", "interchange" : null },
-{"line" : "TWL", "name" : "Admiralty", "sequence" : "15", "interchange" : ["ISL","SIL"] },
+{"line" : "TWL", "name" : "Admiralty", "sequence" : "15", "interchange" : "SIL" },
+{"line" : "TWL", "name" : "Admiralty", "sequence" : "15", "interchange" : "ISL" },
 {"line" : "TWL", "name" : "Central", "sequence" : "16", "interchange" : "ISL" }];
 
 var WRL = [{"line" : "WRL", "name" : "Tuen Mun", "sequence" : "1", "interchange" : null },
@@ -119,7 +122,8 @@ var SIL = [{"line" : "SIL", "name" : "South Horizons", "sequence" : "1", "interc
 {"line" : "SIL", "name" : "Lei Tung", "sequence" : "2", "interchange" : null },
 {"line" : "SIL", "name" : "Wong Chuk Hang", "sequence" : "3", "interchange" : null },
 {"line" : "SIL", "name" : "Ocean Park", "sequence" : "4", "interchange" : null },
-{"line" : "SIL", "name" : "Admiralty", "sequence" : "5", "interchange" : ["ISL","TWL"] }];
+{"line" : "SIL", "name" : "Admiralty", "sequence" : "5", "interchange" : "TWL" },
+{"line" : "SIL", "name" : "Admiralty", "sequence" : "5", "interchange" : "ISL" },];
 exports.AEL = AEL;
 exports.DRL = DRL;
 exports.EAL = EAL;

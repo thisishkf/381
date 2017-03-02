@@ -176,27 +176,24 @@ module.exports ={
 		s= data[i].Date;
 		m = s.charAt(s.indexOf("/")+1);
 		d = s.substring(0,s.indexOf("/")-1);
-console.log(s + " m:" +m+ " d:" +d);
+//console.log(s + " m:" +m+ " d:" +d);
 
 		for(c=1;c<data.length;c++){
 
 			ts = data[c].Date;
 			tm = ts.charAt(ts.indexOf("/")+1);
 			td = s.substring(0,ts.indexOf("/")-1);
-console.log(ts + " m:" +tm+ " d:" +td);
+//console.log(ts + " m:" +tm+ " d:" +td);
 
-			if(m > tm){
-				compared == 1;
-				break;
-			}
+			if(m > tm){compared == 1;break;}
 		
 			if(compared == 0 && c == data.length -1){	
-console.log("Check Day");
+//console.log("Check Day");
 				for(dc=1;c<data.length;dc++){
 					ts = data[dc].Date;
 					tm = ts.charAt(ts.indexOf("/")+1);
 					td = s.substring(0,ts.indexOf("/")-1);
-console.log(ts + " m:" +tm+ " d:" +td);
+//console.log(ts + " m:" +tm+ " d:" +td);
 					
 					if(d>td){
 						index = dc;
@@ -205,15 +202,14 @@ console.log(ts + " m:" +tm+ " d:" +td);
 				}
 			}
 		}
-console.log(index);
+//console.log(index);
 		for (i=index;i<data.length;i++){
 			out.push(data[i]);
 		}
 		for (i=0;i<index;i++){
 			out.push(data[i]);
 		}
-console.log(s);
-
+//console.log(s);
 		callback(out);
 	}
 
