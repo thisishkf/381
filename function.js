@@ -156,34 +156,65 @@ module.exports ={
 	},
 
 	rmHot : function(db,callback){
-		db.collection('district').update({"promotion" : "hot"},{$set : {"promotion" : null}},
+		db.collection('district').updateMany({"promotion" : "hot"},{$set : {"promotion" : null}},{ multi: true },
 			function(result,err){
 				callback(result);
 		})
+	},
+
+	sortWeather : function(data,callback){
+		var out =[];
+		var i=0;
+		var c =1,dc=1;
+		var index;
+		var d,td;
+		var m,tm;
+		var p1,p2;
+		var s,ts;
+		var compared =0;
+
+		s= data[i].Date;
+		m = s.charAt(s.indexOf("/")+1);
+		d = s.substring(0,s.indexOf("/")-1);
+//console.log(s + " m:" +m+ " d:" +d);
+
+		for(c=1;c<data.length;c++){
+
+			ts = data[c].Date;
+			tm = ts.charAt(ts.indexOf("/")+1);
+			td = s.substring(0,ts.indexOf("/")-1);
+//console.log(ts + " m:" +tm+ " d:" +td);
+
+			if(m > tm){
+				compared == 1;
+				break;
+			}
+		
+			if(compared == 0 && c == data.length -1){	
+//console.log("Check Day");
+				for(dc=1;c<data.length;dc++){
+					ts = data[dc].Date;
+					tm = ts.charAt(ts.indexOf("/")+1);
+					td = s.substring(0,ts.indexOf("/")-1);
+//console.log(ts + " m:" +tm+ " d:" +td);
+					
+					if(d>td){
+						index = dc;
+						break;
+					}
+				}
+			}
+		}
+//console.log(index);
+		for (i=index;i<data.length;i++){
+			out.push(data[i]);
+		}
+		for (i=0;i<index;i++){
+			out.push(data[i]);
+		}
+//console.log(s);
+		callback(out);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

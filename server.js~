@@ -19,7 +19,7 @@ var url = require('url');
 var haversine = require('haversine');
 //customized function
 var func = require('./function.js');
-var data = require('./data.js');
+//var data = require('./data.js');
 var mtr = require('./mtr.js');
 //var weatherAPI = require('./schedulingJob.js');
 //on-trail function
@@ -42,11 +42,9 @@ app.post('/login',function(req,res) {
 	var name = req.body.name;
 	var pw = req.body.pw;	
 	var criteria = {"name" : name};
-	console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
-			console.log(result);
 			if(result == null){
 				res.send("Invalid User Name!");
 				res.end();
@@ -118,41 +116,11 @@ app.post('/create/user',function(req,res){
 	});
 });
 
-//test*****************************test************
-app.get('/test/create/user/:name/:pw',function(req,res){
-	var doc = {"name" : req.params.name, 
-							"password" : req.params.pw, 
-							"info" : null, 
-							"active" : false, 
-							"status" : "offline" , 
-							"location" : {
-								"lat" : 0, 
-								"lon" : 0
-								}
-						};
-	var criteria = {"name" : req.params.name};
-	MongoClient.connect(mongourl,function(err,db) {
-		assert.equal(err,null);
-		func.findUser(db,criteria,function(result){
-			if(result == null){
-				func.createUser(db,doc,function(){
-					res.send("ok");
-				});
-			}
-			else{
-				res.end("User Name is alerady Exisit");
-			}
-			db.close();
-		});
-	});
-});
-
-
 //get user information
 //tested
 //api =curl -d 'name=sam' -X POST http://localhost:8090/read/user/info
-app.post('/read/user/info',function(req,res){
-	var name = req.body.name;
+app.get('/read/user/:name/info',function(req,res){
+	var name = req.params.name;
 	var criteria = {"Name" : name};
 	console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
@@ -491,9 +459,7 @@ app.post('/admin/update/hot',function(req,res){
 		MongoClient.connect(mongourl,function(err,db) {
 			assert.equal(err,null);
 			func.rmHot(db,function(result){
-console.log("reset hot");
 				func.addHot(db,criteria1,function(result){
-console.log("1st hot");
 					func.addHot(db,criteria2,function(result){
 						func.addHot(db,criteria3,function(result){
 							//buffer
@@ -501,15 +467,13 @@ console.log("1st hot");
 									data.push(district);
 									db.close();
 									res.render('ok.ejs');
-								});		
-						});
-					});
-				});
-			});
+								});	//buffer	
+						});//add
+					});//add
+				});//add
+			});//rm
 		});//end db	
 	}
-
-	
 })
 
 //*****test*****//
@@ -721,7 +685,10 @@ var bufferAll = new Job(scheduleTime2 , function() {
 			data.push(district);
 			func.getweather(db,function(weather){
 				db.close();
-				data.push(weather);
+				func.sortWeather(weather,function(out){
+						weather = out;
+						data.push(weather);
+					})
 			})
 		})
 	})
@@ -738,9 +705,13 @@ app.listen(process.env.PORT ||8090, function() {
 			data.push(district);
 			func.getweather(db,function(weather){
 				db.close();
-				data.push(weather);
+				
 					console.log("Start: " + Date());
  					console.log('Server is on.');
+					func.sortWeather(weather,function(out){
+						weather = out;
+						data.push(weather);
+					})
 			})
 		})
 	})

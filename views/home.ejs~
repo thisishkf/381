@@ -67,7 +67,7 @@
 				<input type="checkbox" name="xxx" />
 			</td>
 		</tr>
-				<tr>
+		<tr>
 			<td>
 				<a href="/api/read/map/mall">/api/read/map/:category</a>
 			</td>
@@ -75,7 +75,58 @@
 				<input type="checkbox" name="xxx" checked/>
 			</td>
 		</tr>
+		<tr>
+			<td>
+				<a href="/api/read/home">/api/read/home</a>
+			</td>
+			<td>
+				<input type="checkbox" name="xxx" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="/read/user/:name/info">/read/user/:name/info</a>
+			</td>
+			<td>
+				<input type="checkbox" name="xxx" />
+			</td>
+		</tr>
+</table>
 
+<h3>POST</h3>
+<table>
+		<tr>
+			<td>
+				<a href="#">/login</a>
+			</td>
+			<td>
+				<input type="checkbox" name="xxx" checked/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="#">/logout</a>
+			</td>
+			<td>
+				<input type="checkbox" name="xxx" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="#">/create/user</a>
+			</td>
+			<td>
+				<input type="checkbox" name="xxx" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="#">/update/user/info</a>
+			</td>
+			<td>
+				<input type="checkbox" name="xxx" />
+			</td>
+		</tr>
 </table>
 </body>
 </html>
