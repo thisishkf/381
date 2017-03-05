@@ -17,10 +17,9 @@ var EAL =[{"line" : "EAL", "name" : "Lo Wu", "sequence" : "1", "interchange" : n
 {"line" : "EAL", "name" : "Fo Tan", "sequence" : "7", "interchange" : null },
 {"line" : "EAL", "name" : "Sha Tin", "sequence" : "8", "interchange" : null },
 {"line" : "EAL", "name" : "Tai Wai", "sequence" : "9", "interchange" : "MOL" },
-{"line" : "EAL", "name" : "Kowloon Tong", "sequence" : "10", "interchange" : "WRL" },
 {"line" : "EAL", "name" : "Kowloon Tong", "sequence" : "10", "interchange" : "KTL" },
 {"line" : "EAL", "name" : "Mong Kok East", "sequence" : "11", "interchange" : null },
-{"line" : "EAL", "name" : "Hung Hom", "sequence" : "12", "interchange" : null }];
+{"line" : "EAL", "name" : "Hung Hom", "sequence" : "12", "interchange" : "WRL" }];
 
 var ISL =[{"line" : "ISL", "name" : "Chai Wan", "sequence" : "1", "interchange" : null },
 {"line" : "ISL", "name" : "Heng Fa Chuen", "sequence" : "2", "interchange" : null },

@@ -1,6 +1,8 @@
 var assert = require('assert');
 var fs = require('fs');
 var ObjectId = require('mongodb').ObjectID;
+var mtr = require('./mtr.js');
+var haversine = require('haversine');
 module.exports ={
 	loginUser : function(db, user,status){
 		var doc = {"Name" : user};
@@ -192,16 +194,98 @@ module.exports ={
 		for (i=index;i<data.length;i++){out.push(data[i]);}
 		for (i=0;i<index;i++){out.push(data[i]);}
 		callback(out);
+	},
+
+	chooseLine : function(code){
+		switch(code){
+			case "AEL": return mtr.AEL; break;
+			case "DRL": return mtr.DRL; break;
+			case "EAL": return mtr.EAL; break;
+			case "ISL": return mtr.ISL; break;
+			case "KTL": return mtr.KTL; break;
+			case "MOL": return mtr.MOL; break;
+			case "TCL": return mtr.TCL; break;
+			case "TKL": return mtr.TKL; break;
+			case "TWL": return mtr.TWL; break;
+			case "WRL": return mtr.WRL; break;
+			case "SIL": return mtr.SIL; break;
+		}
+
+	},
+
+	absoluteValue : function(num){
+		if (num < 0)
+			return num - 2*num;
+		else
+			return num;
+	},
+
+	findObject : function(name1, name2, name3, name4, data, callback){
+		var siteArray = [];
+
+		for(eachSite of data[0]){	
+			if(eachSite.title == name1){
+				siteArray.push(eachSite);
+			}
+			else if(eachSite.title ==name2){
+				siteArray.push(eachSite);
+			} 
+			else if(eachSite.title ==name3){
+				siteArray.push(eachSite);
+			} 
+			else if(eachSite.title ==name4){
+				siteArray.push(eachSite);
+			} 
+		}
+		callback(siteArray);
+
+	},
+
+	calculateEachDistance : function(siteArray, callback){
+		var start, end = {};
+		var eachDistance = {};
+		var distanceList =[];
+
+		for(a of siteArray){
+			for(b of siteArray){
+				start ={	"latitude" : a.location.lat, 
+									"longitude": a.location.lon
+								};
+				end ={	"latitude" : b.location.lat, 
+								"longitude": b.location.lon
+							};
+				eachDistance= {	"from" : a.title , 
+												"to" : b.title, 
+												"distance" : haversine(start,end)
+											};
+
+				distanceList.push(eachDistance);
+			}
+		}
+	callback(distanceList);
+	},
+
+	findPath : function(siteName, name, distanceList, callback){
+		var i =0;
+		var minDis = 999;
+		var choosen;
+		for(i=0; i<distanceList.length; i++){
+
+			if(distanceList[i].distance < minDis && 
+				distanceList[i].distance !=0 &&
+				siteName.indexOf(distanceList[i].from) >=0 &&
+				distanceList[i].from == name
+				){
+				minDis = distanceList[i].distance; 
+
+				console.log("From: " + distanceList[i].from);
+				console.log("To :" + distanceList[i].to);
+				choosen = distanceList[i].to;
+			}
+		}
+		callback(choosen);
+	
 	}
-
-
-
-
-
-
-
-
-
 
 
 

@@ -484,47 +484,120 @@ app.get('/mtr/:start/:end',function(req,res){
 	var end = req.params.end;
 	var endStation = {};
 	var result =0;
-
+	var nextStation
 	for(line of mtrLine){
 		for(station of line){
 			if(station.name == start)startStation = station;
 			if(station.name == end)endStation = station;
+			
 		}
 	}
+	nextLine = func.chooseLine(startStation.line);
 
-	if(startStation.line == endStation.line){result = startStation.sequence - endStation.sequence;}
+	result = nextInterchange(startStation,endStation,func.chooseLine(startStation.line));
 
-	else if(startStation.line == endStation.interchange){
-		for(line of mtrLine){for(station of line){	
-			if(station.interchange != null){
-				for(line of mtrLine){for(station of line){
-
-				}}	
-			}
-		}}
-	}
-	if(result < 0){result = result -2*result;}
 	res.send(JSON.stringify(startStation) + "<br/>" + JSON.stringify(endStation)+ "<br/>"+result);
 	res.end();
 })
 
 function nextInterchange(start,end,mtrLine){
-	for(line of mtrLine){
-		//start and end on same line
-		if(line.name == end){
-			if(end.sequence > start.sequence){return end.sequence - start.sequence;}
-			else{return start.sequence -end.sequence;}
-		}
-		//look for nearby line
-		if(line.interchange != null && line.name != start){
-			if(start.sequence > line.sequence){return start.sequence - line.sequence + nextInterchange(line.name,end,null);}
-			else{return line.sequence - start.sequence + nextInterchange(line.name,end,null);}			
-		}
-	}
+console.log("------new request-----------");
+	var out =0;
+	var i =0, c=0;
+
+			if(mtrLine[0].line == end.line){
+
+				console.log("end search");
+					for(line of mtrLine){
+						if(line.name == start.name){
+				console.log("station in line from " + line.name + 
+					" and " + end.name + ": " +
+					func.absoluteValue(parseInt(line.sequence) - parseInt(end.sequence)));
+console.log("--------------------------");
+							return func.absoluteValue(parseInt(line.sequence) - parseInt(end.sequence));
+						}
+					}
+			}
+			else{
+				for(i =0;i< mtrLine.length;i++){
+					//look for nearby line
+					if(c==0 && mtrLine[i].interchange != null && 
+						mtrLine[i].interchange == end.line){
+
+						console.log("1next line:" + nextLine[0].line);
+						console.log("interchange:" + mtrLine[i].name);
+
+						nextLine = func.chooseLine(mtrLine[i].interchange);
+						for(line of mtrLine){
+							if(line.name == start.name){
+								console.log("station in line from " + start.line + 
+								" and " + mtrLine[i].line + ": " +
+								func.absoluteValue(parseInt(line.sequence) - parseInt(mtrLine[i].sequence)));
+								return  func.absoluteValue(parseInt(line.sequence) - parseInt(mtrLine[i].sequence))
+									+ nextInterchange(mtrLine[i],end,nextLine);
+							}
+						}
+					}
+
+					else if (c==0 && i == mtrLine.length -1){
+						i=0;
+						c=1;
+					}
+
+					else if (c==1 && mtrLine[i].interchange != null && 
+						mtrLine[i].interchange != start.line && 
+						mtrLine[i].interchange != end.line){
+			
+				console.log("2next line:" + nextLine[0].line);
+				console.log("station in line from " + start.name + " and " + mtrLine[i].name + ": " + 
+					func.absoluteValue(parseInt(start.sequence) - parseInt(mtrLine[i].sequence)));
+					console.log("interchange:" + mtrLine[i].name);
+				nextLine = func.chooseLine(mtrLine[i].interchange);
+				return  func.absoluteValue(parseInt(start.sequence) - parseInt(mtrLine[i].sequence))
+					+ nextInterchange(mtrLine[i],end,nextLine);
+						}
+				}
+			}
 }
+/*******************test2*********************/
+app.get('/test/haversine',function(req,res){
+	var siteName =[];
+	var name1 = "Cafe Gray";
+	var name2 ="Olive ERA"; 
+	var name3 = "Stanley Plaza"; 
+	var name4 = "Double Cafe";
+	siteName.push(name1);
+	siteName.push(name2);
+	siteName.push(name3);
+	siteName.push(name4);
+	var siteArray = [];	
+	var distanceList =[];
+	var path =[];
 
 
 
+	func.findObject(name1, name2, name3, name4 ,data, function(result){
+		siteArray = result;
+//console.log(siteArray);
+		func.calculateEachDistance(siteArray,function(output){
+			distanceList = output;		
+//console.log(distanceList);
+				func.findPath(siteName, name1, distanceList,function(choosen){
+
+					console.log(choosen);
+
+				});
+		
+		});//calculateEachDistance
+
+	});//end findObject
+
+
+
+	
+
+		res.end();
+})
 /*******************schedule Job*********************/
 var Job = require('cron').CronJob;
 var scheduleTime = '0 0 0 */1 * *';
