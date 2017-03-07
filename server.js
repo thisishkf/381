@@ -584,9 +584,9 @@ app.post('/api/suggest/secdule',function(req,res){
 //console.log(distanceList);
 				var choosen = [];
 				choosen = findPath(siteName, siteName[0], distanceList, choosenPath);
-					console.log(choosen);
-
-		
+					//console.log(choosen);
+					res.send(choosen);
+					res.end();
 		});//calculateEachDistance
 
 	});//end findObject

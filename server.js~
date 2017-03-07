@@ -560,7 +560,7 @@ console.log("--------------------------");
 			}
 }
 /*******************test2*********************/
-app.post('/test/haversine',function(req,res){
+app.post('/api/suggest/secdule',function(req,res){
 	var siteName =[];
 	var count = req.body.count;
 	var i=0;
