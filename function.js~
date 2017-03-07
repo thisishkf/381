@@ -263,29 +263,8 @@ module.exports ={
 			}
 		}
 	callback(distanceList);
-	},
-
-	findPath : function(siteName, name, distanceList, callback){
-		var i =0;
-		var minDis = 999;
-		var choosen;
-		for(i=0; i<distanceList.length; i++){
-
-			if(distanceList[i].distance < minDis && 
-				distanceList[i].distance !=0 &&
-				siteName.indexOf(distanceList[i].from) >=0 &&
-				distanceList[i].from == name
-				){
-				minDis = distanceList[i].distance; 
-
-				console.log("From: " + distanceList[i].from);
-				console.log("To :" + distanceList[i].to);
-				choosen = distanceList[i].to;
-			}
-		}
-		callback(choosen);
-	
 	}
+
 
 
 

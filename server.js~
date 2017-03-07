@@ -560,44 +560,74 @@ console.log("--------------------------");
 			}
 }
 /*******************test2*********************/
-app.get('/test/haversine',function(req,res){
+app.post('/test/haversine',function(req,res){
 	var siteName =[];
-	var name1 = "Cafe Gray";
-	var name2 ="Olive ERA"; 
-	var name3 = "Stanley Plaza"; 
-	var name4 = "Double Cafe";
-	siteName.push(name1);
-	siteName.push(name2);
-	siteName.push(name3);
-	siteName.push(name4);
+	var count = req.body.count;
+	var i=0;
+
+	for (i=0;i<count;i++){
+		siteName.push(req.body.name[i]);
+	}
+
+
 	var siteArray = [];	
 	var distanceList =[];
 	var path =[];
+	var choosenPath =[];
 
 
-
-	func.findObject(name1, name2, name3, name4 ,data, function(result){
+	func.findObject(siteName ,data, function(result){
 		siteArray = result;
 //console.log(siteArray);
 		func.calculateEachDistance(siteArray,function(output){
 			distanceList = output;		
 //console.log(distanceList);
-				func.findPath(siteName, name1, distanceList,function(choosen){
-
+				var choosen = [];
+				choosen = findPath(siteName, siteName[0], distanceList, choosenPath);
 					console.log(choosen);
 
-				});
 		
 		});//calculateEachDistance
 
 	});//end findObject
 
-
-
-	
-
 		res.end();
 })
+
+
+	function findPath(siteName, name, distanceList, output){
+		var i =0;
+		var minDis = 999;
+		var choosen;
+
+		if(siteName.length ==1){
+			console.log(name);
+			output.push(name)
+			return output;
+		}
+		else{
+			for(i=0; i<distanceList.length; i++){
+
+				if(distanceList[i].distance < minDis && 
+					distanceList[i].distance !=0 &&
+					siteName.indexOf(distanceList[i].to) >=0 &&
+					distanceList[i].from == name
+					){
+					minDis = distanceList[i].distance; 
+
+					console.log("From: " + distanceList[i].from);
+					console.log("To :" + distanceList[i].to);
+					choosen = distanceList[i].to;
+				}
+			}
+			console.log(name + "->");
+			output.push(name);
+			siteName.splice(siteName.indexOf(name),1);
+			
+			return findPath(siteName, choosen, distanceList, output);
+	
+		}
+	}
 /*******************schedule Job*********************/
 var Job = require('cron').CronJob;
 var scheduleTime = '0 0 0 */1 * *';

@@ -220,20 +220,20 @@ module.exports ={
 			return num;
 	},
 
-	findObject : function(name1, name2, name3, name4, data, callback){
+	findObject : function(siteName, data, callback){
 		var siteArray = [];
 
 		for(eachSite of data[0]){	
-			if(eachSite.title == name1){
+			if(eachSite.title == siteName[0]){
 				siteArray.push(eachSite);
 			}
-			else if(eachSite.title ==name2){
+			else if(eachSite.title == siteName[1]){
 				siteArray.push(eachSite);
 			} 
-			else if(eachSite.title ==name3){
+			else if(eachSite.title == siteName[2]){
 				siteArray.push(eachSite);
 			} 
-			else if(eachSite.title ==name4){
+			else if(eachSite.title == siteName[3]){
 				siteArray.push(eachSite);
 			} 
 		}
@@ -263,29 +263,8 @@ module.exports ={
 			}
 		}
 	callback(distanceList);
-	},
-
-	findPath : function(siteName, name, distanceList, callback){
-		var i =0;
-		var minDis = 999;
-		var choosen;
-		for(i=0; i<distanceList.length; i++){
-
-			if(distanceList[i].distance < minDis && 
-				distanceList[i].distance !=0 &&
-				siteName.indexOf(distanceList[i].from) >=0 &&
-				distanceList[i].from == name
-				){
-				minDis = distanceList[i].distance; 
-
-				console.log("From: " + distanceList[i].from);
-				console.log("To :" + distanceList[i].to);
-				choosen = distanceList[i].to;
-			}
-		}
-		callback(choosen);
-	
 	}
+
 
 
 
