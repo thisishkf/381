@@ -19,8 +19,6 @@ var url = require('url');
 var haversine = require('haversine');
 //customized function
 var func = require('./function.js');
-//var data = require('./data.js');
-var mtr = require('./mtr.js');
 //var weatherAPI = require('./schedulingJob.js');
 //on-trail function
 
@@ -136,29 +134,49 @@ console.log(result);
 			db.close();
 		});
 	});
-})
+});
 
 //update user information
 app.post('/update/user/info',function(req,res){
-	var doc = req.body.doc;
-	var criteria = {"Name" : doc.name};
+	var name = req.body.name;
+	var gender = req.body.gender;
+	var bday = req.body.birthday;
+	var tele = req.body.telephone;
+	var email = req.body.email;
+	var country = req.body.country;
+
+	var criteria = {"name" : name};
+	var doc = {"gender" : gender, 
+						"birthday" : bday, 
+						"telephone" : tele, 
+						"email" : email, 
+						"country" : country};
+
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
-		func.findUser(db,criteria,function(result){
-			if(!result.Active){
-				res.end("Invalud Request");
-			}
-			else{
-				func.updateUserInfo(db,name,function(updateResult){
-					res.end(updateResult);
-				})
-			}
+			func.updateUserInfo(db,criteria,doc,function(updateResult){
+				res.end(updateResult);
+			})
 			db.close();
 		});
-	});
-})
+});
 
+//change user password
+app.post('/update/user/password',function(req,res){
+	var name = req.body.name;
+	var pw = req.body.pw;
 
+	var criteria = {"name" : name};
+	var doc = {"password" : pw};
+
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			func.updateUserpasword(db,criteria,doc,function(updateResult){
+				res.end(updateResult);
+			})
+			db.close();
+		});
+});
 
 /*******************district*********************/
 app.post('/admin/create/attraction',function(req,res){
@@ -476,89 +494,6 @@ app.post('/admin/update/hot',function(req,res){
 	}
 })
 
-//*****test*****//
-var mtrLine = [mtr.AEL,mtr.DRL,mtr.EAL,mtr.ISL,mtr.KTL,mtr.MOL,mtr.TCL,mtr.TKL,mtr.TWL,mtr.WRL,mtr.SIL];
-app.get('/mtr/:start/:end',function(req,res){
-	var start = req.params.start;
-	var StartStation = {};
-	var end = req.params.end;
-	var endStation = {};
-	var result =0;
-	var nextStation
-	for(line of mtrLine){
-		for(station of line){
-			if(station.name == start)startStation = station;
-			if(station.name == end)endStation = station;
-			
-		}
-	}
-	nextLine = func.chooseLine(startStation.line);
-
-	result = nextInterchange(startStation,endStation,func.chooseLine(startStation.line));
-
-	res.send(JSON.stringify(startStation) + "<br/>" + JSON.stringify(endStation)+ "<br/>"+result);
-	res.end();
-})
-
-function nextInterchange(start,end,mtrLine){
-console.log("------new request-----------");
-	var out =0;
-	var i =0, c=0;
-
-			if(mtrLine[0].line == end.line){
-
-				console.log("end search");
-					for(line of mtrLine){
-						if(line.name == start.name){
-				console.log("station in line from " + line.name + 
-					" and " + end.name + ": " +
-					func.absoluteValue(parseInt(line.sequence) - parseInt(end.sequence)));
-console.log("--------------------------");
-							return func.absoluteValue(parseInt(line.sequence) - parseInt(end.sequence));
-						}
-					}
-			}
-			else{
-				for(i =0;i< mtrLine.length;i++){
-					//look for nearby line
-					if(c==0 && mtrLine[i].interchange != null && 
-						mtrLine[i].interchange == end.line){
-
-						console.log("1next line:" + nextLine[0].line);
-						console.log("interchange:" + mtrLine[i].name);
-
-						nextLine = func.chooseLine(mtrLine[i].interchange);
-						for(line of mtrLine){
-							if(line.name == start.name){
-								console.log("station in line from " + start.line + 
-								" and " + mtrLine[i].line + ": " +
-								func.absoluteValue(parseInt(line.sequence) - parseInt(mtrLine[i].sequence)));
-								return  func.absoluteValue(parseInt(line.sequence) - parseInt(mtrLine[i].sequence))
-									+ nextInterchange(mtrLine[i],end,nextLine);
-							}
-						}
-					}
-
-					else if (c==0 && i == mtrLine.length -1){
-						i=0;
-						c=1;
-					}
-
-					else if (c==1 && mtrLine[i].interchange != null && 
-						mtrLine[i].interchange != start.line && 
-						mtrLine[i].interchange != end.line){
-			
-				console.log("2next line:" + nextLine[0].line);
-				console.log("station in line from " + start.name + " and " + mtrLine[i].name + ": " + 
-					func.absoluteValue(parseInt(start.sequence) - parseInt(mtrLine[i].sequence)));
-					console.log("interchange:" + mtrLine[i].name);
-				nextLine = func.chooseLine(mtrLine[i].interchange);
-				return  func.absoluteValue(parseInt(start.sequence) - parseInt(mtrLine[i].sequence))
-					+ nextInterchange(mtrLine[i],end,nextLine);
-						}
-				}
-			}
-}
 /*******************test2*********************/
 app.post('/api/suggest/secdule',function(req,res){
 	var siteName =[];
@@ -630,10 +565,10 @@ app.post('/api/suggest/secdule',function(req,res){
 	}
 /*******************schedule Job*********************/
 var Job = require('cron').CronJob;
-var scheduleTime = '0 0 0 */1 * *';
+var weatherSchedule = '22 21 * * *';
 var scheduleTime2 = '0 30 */1 * * *';
 
-var weatherAPI = new Job(scheduleTime , function() {	
+var weatherAPI = new Job(weatherSchedule , function() {	
 	var loopCount =1
 	var content = "";
 	var options = {
