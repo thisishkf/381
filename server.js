@@ -754,7 +754,6 @@ app.listen(process.env.PORT ||8090, function() {
 							weather = out;
 							data.push(weather);
 						}
-console.log(data);
 					})
 			})
 		})

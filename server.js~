@@ -749,7 +749,7 @@ app.listen(process.env.PORT ||8090, function() {
 					console.log("Start: " + Date());
  					console.log('Server is on.');
 					func.sortWeather(weather,function(out){
-						if(out != null){
+						if(out != []){
 							data.pop();
 							weather = out;
 							data.push(weather);
