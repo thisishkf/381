@@ -179,7 +179,7 @@ console.log(doc);
 	sortWeather : function(data,callback){
 		var out =[];
 		var i=0,c=1,dc=1;
-		var index;
+		var index=0;
 		var d,td,m,tm,s,ts;
 		var compared =0;
 
@@ -192,7 +192,7 @@ console.log(doc);
 			ts = data[c].Date;
 			tm = ts.charAt(ts.indexOf("/")+1);
 
-			if(m > tm){compared == 1;break;}
+			if(compared == 0 && m > tm){compared == 1;break;}
 		
 			if(compared == 0 && c == data.length -1){	
 				for(dc=1;dc<data.length;dc++){

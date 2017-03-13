@@ -85,7 +85,7 @@ console.log(doc);
 		db.collection('district').insertOne(doc,
 			function(err,result) {
 				assert.equal(err,null);
-				callback();
+				callback(result);
 			}
 		);
 	},

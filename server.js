@@ -737,19 +737,24 @@ var bufferAll = new Job(scheduleTime2 , function() {
 /*******************Start server*********************/
 app.listen(process.env.PORT ||8090, function() {
 	console.log("Preparing ...");
-	MongoClient.connect(mongourl,function(err,db) {
 		data =[];
+	MongoClient.connect(mongourl,function(err,db) {
+
 		assert.equal(err,null);
 		func.getDistrict(db,function(district){
 			data.push(district);
 			func.getweather(db,function(weather){
 				db.close();
-				
+				data.push(weather);
 					console.log("Start: " + Date());
  					console.log('Server is on.');
 					func.sortWeather(weather,function(out){
-						weather = out;
-						data.push(weather);
+						if(out != []){
+							data.pop();
+							weather = out;
+							data.push(weather);
+						}
+console.log(data);
 					})
 			})
 		})
