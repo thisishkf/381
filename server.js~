@@ -210,7 +210,7 @@ console.log(result);
 	});//end db
 })
 
-}//end create
+
 //add comment
 //api : curl -X POST -H "Content-Type:application/JSON" -d '{"doc":{"dis" : "588577f3734d1d75e11a7695","title":"Ma On Shan", "content" : "new test","user" : "sam"}}' localhost:8090/api/create/comment
 app.post('/api/create/comment',function(req,res){

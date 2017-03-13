@@ -190,6 +190,7 @@ console.log(bfile);
 							"location":{"lon" : req.body.lon, 
 													"lat" : req.body.lat
 													},  
+							"address" : req.body.address,
 							"category" : req.body.cat,
 							"description" : req.body.des,
 							"hours" : req.body.hour,
