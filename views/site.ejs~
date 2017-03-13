@@ -3,6 +3,9 @@
 </script>
 <body>
 	<table>
+<tr><td>
+	<img src="data:<%=rest.mimetype%>;base64,<%=rest.data%>"/>
+</td></tr>
 			<tr><td>Title</td><td><%=output.title%></td></tr>
 			<tr><td colspan="2">Location</td><td></td></tr>
 			<tr><td>Lat</td><td><%=output.location.lat%></td></tr>

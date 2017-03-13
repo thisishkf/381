@@ -35,6 +35,17 @@ console.log(doc);
 		)//end findOne
 	},
 /*********************************************************************/
+	updateUserpasword : function(db,criteria,doc,callback) {
+console.log(criteria);
+console.log(doc);
+		db.collection('user').update(criteria,{$set:doc},
+			function(err,result) {
+				assert.equal(err,null);
+				callback("Update Success");
+			}//end function(err,result) {
+		)//end findOne
+	},
+/*********************************************************************/
 	createUser : function(db,doc,callback){
 		db.collection('user').insertOne(doc,
 			function(err,result) {

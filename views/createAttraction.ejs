@@ -8,7 +8,7 @@
 
 <%- include menu.ejs %>
 <table>
-<form action="/admin/create/attraction" method="POST">
+<form action="/admin/create/attraction" method="POST" encType="multipart/form-data">
 	<tr>
 		<td>District:</td>
 		<td>
@@ -59,18 +59,26 @@
 		<td>
 			<input name="des" id="des" type="text"/>
 		</td>
-		</tr>
+	</tr>
 	<tr>
 		<td>Hours:</td>
 		<td>
 			<input name="hour" id="hour" type="text"/>
 		</td>
-		</tr>
+	</tr>
+	<tr>
+		<td>Image:</td>
+		<td>
+			<input type="file" name="sampleFile" id="sampleFile"/>
+		</td>
+	</tr>
 	<tr>
 		<td>
 			<input type="submit" value="submit"/>
 		</td>
-		</tr>
+	</tr>
+
+
 </from>
 </table>
 </body>

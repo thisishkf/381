@@ -17,6 +17,7 @@ var fs = require('fs');
 var session = require('cookie-session');
 var url = require('url');
 var haversine = require('haversine');
+var fileUpload = require('express-fileupload');
 //customized function
 var func = require('./function.js');
 //var weatherAPI = require('./schedulingJob.js');
@@ -178,8 +179,12 @@ app.post('/update/user/password',function(req,res){
 		});
 });
 
+
+
 /*******************district*********************/
 app.post('/admin/create/attraction',function(req,res){
+	var bfile = req.files.sampleFile;
+console.log(bfile);
 	var doc = {	"district" : req.body.district,
 							"title" : req.body.title, 
 							"location":{"lon" : req.body.lon, 
@@ -188,18 +193,23 @@ app.post('/admin/create/attraction',function(req,res){
 							"category" : req.body.cat,
 							"description" : req.body.des,
 							"hours" : req.body.hour,
+							"data" : new Buffer(bfile.data).toString('base64'),
+							"mimetype" : bfile.mimetype,
 							"promotion" : null,
 							"issue" : null,
 							"comment" : []
 						};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
+
 		func.addDistrict(db,doc,function(result){
 			res.send(result);
 			db.close();
+console.log(result);
 		});
 	});//end db
 })
+
 
 //add comment
 //api : curl -X POST -H "Content-Type:application/JSON" -d '{"doc":{"dis" : "588577f3734d1d75e11a7695","title":"Ma On Shan", "content" : "new test","user" : "sam"}}' localhost:8090/api/create/comment
