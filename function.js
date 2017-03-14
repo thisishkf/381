@@ -141,6 +141,26 @@ console.log(doc);
 		});
 	},
 /*********************************************************************/
+	/*buyCoupon : function (db, user, point, callback){
+		var criteria = {"name" : user};
+		var newPoint =0;
+			db.collection('user').findOne(criteria,{"Password": 0},
+				function(err,result) {
+					if(result.freeCoupon == false){
+						newPoint = result.point - point;
+						db.collection('user').update(criteria,{$set : {"point" : newPoint}},
+							function(result){
+								callback(result);
+							}//end update Callback
+						)//end update
+					}//end function(err,result) {
+				)//end findOne
+			}//end if freeCoupon
+			else{
+				
+			}
+	},*/
+/*********************************************************************/
 	addWeather : function(db,jsonDoc,callback){
 		db.collection('weather').insert(jsonDoc,
 			function(err,result){
@@ -234,6 +254,7 @@ console.log(doc);
 		}//end for
 		callback(siteArray);
 	},
+
 /*********************************************************************/
 	calculateEachDistance : function(siteArray, callback){
 		var start, end = {};

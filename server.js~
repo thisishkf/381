@@ -94,6 +94,7 @@ app.post('/create/user',function(req,res){
 							"info" : null, 
 							"active" : false, 
 							"status" : "offline" , 
+							"point"	 : 0,
 							"location" : {
 								"lat" : 0, 
 								"lon" : 0
@@ -145,13 +146,16 @@ app.post('/update/user/info',function(req,res){
 	var tele = req.body.telephone;
 	var email = req.body.email;
 	var country = req.body.country;
+	var bfile = req.body.bfile;
 
 	var criteria = {"name" : name};
 	var doc = {"gender" : gender, 
 						"birthday" : bday, 
 						"telephone" : tele, 
 						"email" : email, 
-						"country" : country};
+						"country" : country,
+							"data" : new Buffer(bfile.data).toString('base64'),
+							"mimetype" : bfile.mimetype,};
 
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
@@ -161,6 +165,20 @@ app.post('/update/user/info',function(req,res){
 			db.close();
 		});
 });
+
+//buy coupon
+app.post('/update/user/point',function(req,res){
+	var user = req.body.user;
+	var point = req.body.point;
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			func.buyCoupon(db,user,point,function(result){
+				res.send(result.point);
+				res.end();
+				db.close();
+			});
+		});
+})
 
 //change user password
 app.post('/update/user/password',function(req,res){
@@ -174,8 +192,8 @@ app.post('/update/user/password',function(req,res){
 		assert.equal(err,null);
 			func.updateUserpasword(db,criteria,doc,function(updateResult){
 				res.end(updateResult);
+				db.close();
 			})
-			db.close();
 		});
 });
 
@@ -215,13 +233,11 @@ console.log(result);
 //add comment
 //api : curl -X POST -H "Content-Type:application/JSON" -d '{"doc":{"dis" : "588577f3734d1d75e11a7695","title":"Ma On Shan", "content" : "new test","user" : "sam"}}' localhost:8090/api/create/comment
 app.post('/api/create/comment',function(req,res){
-	var income = req.body.doc;
-	var dis = income.dis;
-	var title = income.title;
+	var title = req.body.title;
 	var doc = {	"comment" :{
-									"content" : income.content,
-									"user"		:	income.user,
-									"date/Time": Date()
+									"content" : req.body.content,
+									"user"		:	req.body.user,
+									"date/Time": req.body.time
 									}
 						};
 	var criteria = {"_id" : ObjectId(dis), "site" : {$elemMatch : {"title" : title}}};
@@ -754,7 +770,6 @@ app.listen(process.env.PORT ||8090, function() {
 							weather = out;
 							data.push(weather);
 						}
-console.log(data);
 					})
 			})
 		})
