@@ -146,20 +146,49 @@ console.log(doc);
 		var newPoint =0;
 			db.collection('user').findOne(criteria,{"Password": 0},
 				function(err,result) {
-					if(result.freeCoupon == false){
 						newPoint = result.point - point;
-						db.collection('user').update(criteria,{$set : {"point" : newPoint}},
-							function(result){
-								callback(result);
-							}//end update Callback
-						)//end update
-					}//end function(err,result) {
-				)//end findOne
-			}//end if freeCoupon
-			else{
-				
-			}
+
+						if(newPoint <0){
+							callback("error");
+						}
+						else{
+							db.collection('user').update(criteria,{$set : {"point" : newPoint}},
+								function(result){
+									db.collection('user').findOne(criteria,{"point": 1},
+										function(err,result) {
+											callback(result);
+										}
+									)
+								}//end update Callback
+							)//end update
+						}
+						
+				}//end function(err,result) {
+			)//end findOne
+
 	},
+
+	getFreeCoupon : function (db, user,  callback){
+		var criteria = {"name" : user};
+		var newPoint =0;
+			db.collection('user').findOne(criteria,{"Password": 0},
+				function(err,result) {
+						if(result.freeCoupon == false){
+							db.collection('user').update(criteria,{$set : {"freeCoupon" : true}},
+								function(result){
+									callback("valid");
+								}
+							)
+						}
+						else{
+							callback("error);
+						}
+						
+				}//end function(err,result) {
+			)//end findOne
+
+	},
+
 /*********************************************************************/
 	addWeather : function(db,jsonDoc,callback){
 		db.collection('weather').insert(jsonDoc,

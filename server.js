@@ -173,7 +173,19 @@ app.post('/update/user/point',function(req,res){
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 			func.buyCoupon(db,user,point,function(result){
-				res.send(result.point);
+				res.send(result);
+				res.end();
+				db.close();
+			});
+		});
+})
+
+app.post('/update/user/freeCoupon',function(req,res){
+	var user = req.body.user;
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			func.getFreeCoupon(db,user,function(result){
+				res.send(result);
 				res.end();
 				db.close();
 			});
