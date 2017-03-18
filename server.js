@@ -95,6 +95,7 @@ app.post('/create/user',function(req,res){
 							"active" : false, 
 							"status" : "offline" , 
 							"point"	 : 0,
+							"schedule" : [],
 							"location" : {
 								"lat" : 0, 
 								"lon" : 0
@@ -186,6 +187,23 @@ app.post('/update/user/freeCoupon',function(req,res){
 		assert.equal(err,null);
 			func.getFreeCoupon(db,user,function(result){
 				res.send(result);
+				res.end();
+				db.close();
+			});
+		});
+})
+///////////////////////////////////////////////////////////////////////////////
+//buy coupon
+app.post('/update/user/schedule',function(req,res){
+	var name = req.body.user;
+	var schedule = req.body.schedule;
+	var id = ""+ parseInt(Math.random()*100000);
+	var criteria = {"name" : name};
+	var doc = {"id" : id, "schedule" : schedule};
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			func.addSchedule(db,criteria,doc,function(result){
+				res.send(id + '\n');
 				res.end();
 				db.close();
 			});

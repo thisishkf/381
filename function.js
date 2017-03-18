@@ -102,6 +102,18 @@ console.log(doc);
 		);
 	},
 /*********************************************************************/
+	addSchedule : function(db,criteria,doc,callback){
+		db.collection('user').update(criteria,{$push: {"schedule" : doc}},
+			function(err,result) {
+				if (err) {
+					result = err;
+					console.log("update: " + JSON.stringify(err));
+				}
+				callback(result);
+			}
+		);
+	},
+/*********************************************************************/
 	getDistrictInfo : function(db,name,callback){
 		var output = [];
 		var cursor = db.collection('district').aggregate([
