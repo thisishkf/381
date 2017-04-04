@@ -95,6 +95,7 @@ app.post('/create/user',function(req,res){
 							"active" : false, 
 							"status" : "offline" , 
 							"point"	 : 0,
+							"schedule" : [],
 							"location" : {
 								"lat" : 0, 
 								"lon" : 0
