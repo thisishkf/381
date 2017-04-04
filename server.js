@@ -374,7 +374,7 @@ app.get('/api/read/map/:category', function(req,res){
 	var one ={};
 	for(eachSite of data[0]){	
 		if(criteria == "all" || eachSite.categroy == criteria){
-			one = {"title" : eachSite.title, "lat" : eachSite.lat, "lon" : eachSite.lon};
+			one = {"title" : eachSite.title, "lat" : eachSite.location.lat, "lon" : eachSite.location.lon};
 			output.push(one);
 		}
 	}
