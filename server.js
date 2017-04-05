@@ -122,12 +122,11 @@ app.post('/create/user',function(req,res){
 //api =curl -d 'name=sam' -X POST http://localhost:8090/read/user/info
 app.get('/read/user/:name/info',function(req,res){
 	var name = req.params.name;
-	var criteria = {"Name" : name};
+	var criteria = {"name" : name};
 	console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
-console.log(result);
 			if(result == null || !result.Active){
 				res.end("Invalud Request");
 			}
@@ -139,6 +138,28 @@ console.log(result);
 	});
 });
 
+app.get('/read/user/:name/schedule',function(req,res){
+	var name = req.params.name;
+	var criteria = {"name" : name};
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+		func.findUser(db,criteria,function(result){
+			if(result == null || !result.Active){
+				res.end("Invalud Request");
+			}
+			else{
+				db.collection('user').findOne(criteria,{"Password": 0},
+			function(err,result) {
+				assert.equal(err,null);
+				res.send(result.schedule);
+				res.end();
+			}//end function(err,result) {
+		)//end findOne
+			}
+			db.close();
+		});
+	});
+});
 //update user information
 app.post('/update/user/info',function(req,res){
 	var name = req.body.name;
@@ -383,6 +404,7 @@ app.get('/api/read/map/:category', function(req,res){
 	else	
 		res.send(output);
 })
+
 
 /*******************weather API*********************/
 //tested
