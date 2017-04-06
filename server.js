@@ -48,7 +48,7 @@ app.post('/login',function(req,res) {
 				res.send("Invalid User Name!");
 				res.end();
 			}//no user
-			else if(result.name == name && result.password == pw && !result.Active){
+			else if(result.name == name && result.password == pw ){
 				res.send('Valid');
 				res.end();
 				func.loginUser(db,result.ID,true);
@@ -71,9 +71,6 @@ app.post('/logout',function(req,res) {
 			if(result == null){
 				res.end("Invalid User Name!");
 			}//no user
-			else if(!result.Active){
-				res.end('Invalid Request');
-			}
 			else{		
 				res.end('valid');
 				func.loginUser(db,result.ID,false);
@@ -127,7 +124,7 @@ app.get('/read/user/:name/info',function(req,res){
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
-			if(result == null || !result.Active){
+			if(result == null){
 				res.end("Invalud Request");
 			}
 			else{
@@ -144,7 +141,7 @@ app.get('/read/user/:name/schedule',function(req,res){
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
-			if(result == null || !result.Active){
+			if(result == null){
 				res.end("Invalud Request");
 			}
 			else{

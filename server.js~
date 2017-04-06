@@ -127,7 +127,7 @@ app.get('/read/user/:name/info',function(req,res){
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
-			if(result == null || !result.Active){
+			if(result == null){
 				res.end("Invalud Request");
 			}
 			else{
@@ -141,11 +141,10 @@ app.get('/read/user/:name/info',function(req,res){
 app.get('/read/user/:name/schedule',function(req,res){
 	var name = req.params.name;
 	var criteria = {"name" : name};
-	console.log(criteria);
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.findUser(db,criteria,function(result){
-			if(result == null || !result.Active){
+			if(result == null){
 				res.end("Invalud Request");
 			}
 			else{
