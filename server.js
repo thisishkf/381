@@ -192,7 +192,7 @@ app.post('/update/user/info',function(req,res){
 	var tele = req.body.telephone;
 	var email = req.body.email;
 	var country = req.body.country;
-	var data = new Buffer(req.body.data).toString('base64');
+	var data = req.body.data;
 	var mimetype = req.body.mimetype;
 
 	var criteria = {"name" : name};
