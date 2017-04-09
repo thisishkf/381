@@ -158,7 +158,7 @@ app.get('/read/user/:name/schedule',function(req,res){
 	});
 });
 //update user information
-app.post('/update/user/info',function(req,res){
+/*app.post('/update/user/info',function(req,res){
 	var name = req.body.name;
 	var gender = req.body.gender;
 	var bday = req.body.birthday;
@@ -175,6 +175,34 @@ app.post('/update/user/info',function(req,res){
 						"country" : country,
 							"data" : new Buffer(bfile.data).toString('base64'),
 							"mimetype" : bfile.mimetype,};
+
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			func.updateUserInfo(db,criteria,doc,function(updateResult){
+				res.end(updateResult);
+			})
+			db.close();
+		});
+});*/
+
+app.post('/update/user/info',function(req,res){
+	var name = req.body.name;
+	var gender = req.body.gender;
+	var bday = req.body.birthday;
+	var tele = req.body.telephone;
+	var email = req.body.email;
+	var country = req.body.country;
+	var data = new Buffer(req.body.data).toString('base64');
+	var mimetype = req.body.mimetype;
+
+	var criteria = {"name" : name};
+	var doc = {"gender" : gender, 
+						"birthday" : bday, 
+						"telephone" : tele, 
+						"email" : email, 
+						"country" : country,
+							"data" : data,
+							"mimetype" : mimetype};
 
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
