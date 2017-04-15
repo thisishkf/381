@@ -127,6 +127,22 @@
 				<input type="checkbox" name="xxx" />
 			</td>
 		</tr>
+		<tr>
+			<td>
+				<a href="#">/api/create/comment</a>
+			</td>
+			<td>
+				<input type="checkbox" name="xxx" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="#">/update/user/info</a>
+			</td>
+			<td>
+				<input type="checkbox" name="xxx" />
+			</td>
+		</tr>
 </table>
 </body>
 </html>

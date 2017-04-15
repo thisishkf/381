@@ -307,21 +307,28 @@ console.log(result);
 
 
 //add comment
-//api : curl -X POST -H "Content-Type:application/JSON" -d '{"doc":{"dis" : "588577f3734d1d75e11a7695","title":"Ma On Shan", "content" : "new test","user" : "sam"}}' localhost:8090/api/create/comment
+
 app.post('/api/create/comment',function(req,res){
 	var title = req.body.title;
+	var username = req.body.username;
+	var comment = req.body.comment;
 	var doc = {	"comment" :{
-									"content" : req.body.content,
-									"user"		:	req.body.user,
-									"date/Time": req.body.time
-									}
+								"content" : comment,
+								"user"		:	username,
+								"date/Time": Date()
+							}
 						};
-	var criteria = {"_id" : ObjectId(dis), "site" : {$elemMatch : {"title" : title}}};
+	var criteria = {"title" : title};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.addDistrictComment(db,criteria,doc,function(result){
-			res.send(result);
-			db.close();
+			if(result.nModified == 1){
+				res.send("ok");				
+			}else{
+				res.send("fail");
+			}
+				res.end();
+				db.close();
 		});
 	});//end db
 })
@@ -571,27 +578,33 @@ app.get('/admin/read/user',function(req,res){
 
 app.post('/admin/update/hot',function(req,res){
 	var tick = req.body.tick;
-	if(tick.length != 3){
-		res.send("please check 3 boxes");
+	if(tick.length != 5){
+		res.send("please check 5 boxes");
 		res.end();
 	}
 	else {
 		var criteria1 = {"_id" :  ObjectId(tick[0])};
 		var criteria2 = {"_id" :  ObjectId(tick[1])};
 		var criteria3 = {"_id" :  ObjectId(tick[2])};
-
+		var criteria4 = {"_id" :  ObjectId(tick[3])};
+		var criteria5 = {"_id" :  ObjectId(tick[4])};
 		MongoClient.connect(mongourl,function(err,db) {
 			assert.equal(err,null);
 			func.rmHot(db,function(result){
 				func.addHot(db,criteria1,function(result){
 					func.addHot(db,criteria2,function(result){
 						func.addHot(db,criteria3,function(result){
-							//buffer
-							func.getDistrict(db,function(district){
-									data.push(district);
-									db.close();
-									res.render('ok.ejs');
-								});	//buffer	
+							func.addHot(db,criteria4,function(result){
+								func.addHot(db,criteria5,function(result){
+
+									//buffer
+									func.getDistrict(db,function(district){
+											data.push(district);
+											db.close();
+											res.render('ok.ejs');
+										});	//buffer	
+								});//add
+							});//add
 						});//add
 					});//add
 				});//add

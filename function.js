@@ -97,7 +97,7 @@ console.log(doc);
 					result = err;
 					console.log("update: " + JSON.stringify(err));
 				}
-				callback(result);
+				callback(result.result);
 			}
 		);
 	},

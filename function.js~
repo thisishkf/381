@@ -103,7 +103,7 @@ console.log(doc);
 	},
 /*********************************************************************/
 	addSchedule : function(db,criteria,doc,callback){
-		db.collection('district').update(criteria,{$push: doc},
+		db.collection('user').update(criteria,{$push: {"schedule" : doc}},
 			function(err,result) {
 				if (err) {
 					result = err;
