@@ -323,12 +323,17 @@ app.post('/api/create/comment',function(req,res){
 		assert.equal(err,null);
 		func.addDistrictComment(db,criteria,doc,function(result){
 			if(result.nModified == 1){
-				res.send("ok");				
+				func.addPoint(db, username,function(result){
+					res.send("ok");	
+					res.end();
+					db.close();
+				})		
 			}else{
 				res.send("fail");
-			}
 				res.end();
 				db.close();
+			}
+				
 		});
 	});//end db
 })

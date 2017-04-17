@@ -97,7 +97,7 @@ console.log(doc);
 					result = err;
 					console.log("update: " + JSON.stringify(err));
 				}
-				callback(result);
+				callback(result.result);
 			}
 		);
 	},
@@ -199,6 +199,21 @@ console.log(doc);
 				}//end function(err,result) {
 			)//end findOne
 
+	},
+
+	addPoint : function(db, user){
+		var criteria = {"name" : user};
+		var newPoint =0;
+			db.collection('user').findOne(criteria,{"Password": 0},
+				function(err,result) {
+					db.collection('user').update(criteria,{$set : {"point" : result.point +1}},
+						function(result){
+							callback("valid");
+						}
+					)
+						
+				}//end function(err,result) {
+			)//end findOne
 	},
 
 /*********************************************************************/

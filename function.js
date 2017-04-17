@@ -201,6 +201,21 @@ console.log(doc);
 
 	},
 
+	addPoint : function(db, user,callback){
+		var criteria = {"name" : user};
+		var newPoint =0;
+			db.collection('user').findOne(criteria,{"Password": 0},
+				function(err,result) {
+					db.collection('user').update(criteria,{$set : {"point" : result.point +1}},
+						function(result){
+							callback("valid");
+						}
+					)
+						
+				}//end function(err,result) {
+			)//end findOne
+	},
+
 /*********************************************************************/
 	addWeather : function(db,jsonDoc,callback){
 		db.collection('weather').insert(jsonDoc,

@@ -322,9 +322,13 @@ app.post('/api/create/comment',function(req,res){
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		func.addDistrictComment(db,criteria,doc,function(result){
-			//if(result.nModified == 1)
-console.log(result.nModified);
-				res.send(result);				
+			if(result.nModified == 1){
+				func.addPoint(db, username,function(result){
+					res.send("ok");	
+				})		
+			}else{
+				res.send("fail");
+			}
 				res.end();
 				db.close();
 		});
