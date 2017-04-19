@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+<html ng-app>
+<head>
+    <title>Testing Angualar JS</title>
+</head>
+
+<body>
+    <div class="container"
+         ng-init="array=['1','2','3']">
+    Name:
+    <input type="text" ng-model="name"/> {{name}}
+        
+    <ul>
+    <li ng-repeat="one in array">{{one}}</li>    
+    </ul>    
+</div>
+<script src="script/angular.min/js"></script>
+</body>
+</html>

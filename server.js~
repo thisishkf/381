@@ -37,6 +37,10 @@ app.use(session({cookieName: 'session',keys: ['IT9']}));
 
 //login
 //api: -d'name="abc"&pw="123"'
+app.get('/angularjs',function(req,res){
+	res.render('index.html');
+})
+
 app.post('/login',function(req,res) {
 	var name = req.body.name;
 	var pw = req.body.pw;	
@@ -292,7 +296,7 @@ console.log(bfile);
 							"mimetype" : bfile.mimetype,
 							"promotion" : null,
 							"issue" : null,
-							"comment" : []
+							"f" : []
 						};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
@@ -324,13 +328,29 @@ app.post('/api/create/comment',function(req,res){
 		func.addDistrictComment(db,criteria,doc,function(result){
 			if(result.nModified == 1){
 				func.addPoint(db, username,function(result){
-					res.send("ok");	
+				console.log("Buffer All: " + Date());
+						data =[];
+						func.getDistrict(db,function(district){
+							data.push(district);
+							func.getweather(db,function(weather){
+								db.close();
+								func.sortWeather(weather,function(out){
+										weather = out;
+										data.push(weather);
+										res.send("ok");	
+										res.end();
+										db.close();
+									})
+							})
+						})
+					
 				})		
 			}else{
 				res.send("fail");
-			}
 				res.end();
 				db.close();
+			}
+				
 		});
 	});//end db
 })
