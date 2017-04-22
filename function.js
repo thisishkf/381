@@ -113,6 +113,32 @@ console.log(doc);
 			}
 		);
 	},
+
+	updateSchedule : function(db,criteria,doc,callback){
+		db.collection('user').update(criteria,{$set: doc},
+			function(err,result) {
+				if (err) {
+					result = err;
+					console.log("update: " + JSON.stringify(err));
+				}
+				callback(result);
+			}
+		);
+	},
+
+	deleteSchedule : function(db,criteria, id, callback){
+		db.collection('user').update(criteria, { $pull: { "schedule" : {"id" : id} }   },{ multi: false },
+			function(err,result) {
+
+				if (err) {
+					result = err;
+					console.log("remove: " + JSON.stringify(err));
+				}
+				console.log(result.result);
+				callback(result);
+			}
+		);
+	},
 /*********************************************************************/
 	getDistrictInfo : function(db,name,callback){
 		var output = [];

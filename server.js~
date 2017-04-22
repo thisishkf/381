@@ -245,7 +245,7 @@ app.post('/update/user/point',function(req,res){
 
 app.post('/update/user/freeCoupon',function(req,res){
 	var user = req.body.user;
-			MongoClient.connect(mongourl,function(err,db) {
+	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 			func.getFreeCoupon(db,user,function(result){
 				res.send(result);
@@ -256,7 +256,7 @@ app.post('/update/user/freeCoupon',function(req,res){
 })
 ///////////////////////////////////////////////////////////////////////////////
 //buy coupon
-app.post('/update/user/schedule',function(req,res){
+app.post('/add/user/schedule',function(req,res){
 	var name = req.body.user;
 	var schedule = req.body.schedule;
 	var id = ""+ parseInt(Math.random()*100000);
@@ -266,6 +266,37 @@ app.post('/update/user/schedule',function(req,res){
 		assert.equal(err,null);
 			func.addSchedule(db,criteria,doc,function(result){
 				res.send(id + '\n');
+				res.end();
+				db.close();
+			});
+		});
+})
+
+app.post('/update/user/schedule',function(req,res){
+	var name = req.body.user;
+	var schedule = req.body.schedule;
+	var id = "" + req.body.id;
+	var criteria = {"name" : name, "schedule.id" : id};
+	var doc = {"schedule" : schedule};
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			func.updateSchedule(db,criteria,doc,function(result){
+				res.send(id + '\n');
+				res.end();
+				db.close();
+			});
+		});
+})
+
+app.post('/delete/user/schedule',function(req,res){
+	var name = req.body.user;
+	var id = "" + req.body.id;
+console.log(id + " " + name);
+	var criteria = {"name" : name };
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			func.deleteSchedule(db,criteria,id,function(result){
+				res.send(id + ' deleted\n');
 				res.end();
 				db.close();
 			});
