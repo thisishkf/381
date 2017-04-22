@@ -221,14 +221,26 @@ app.post('/update/user/info',function(req,res){
 app.post('/update/user/point',function(req,res){
 	var user = req.body.user;
 	var point = req.body.point;
-	MongoClient.connect(mongourl,function(err,db) {
+	if (point == "free"){
+		MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
-			func.buyCoupon(db,user,point,function(result){
+			func.getFreeCoupon(db,user,function(result){
 				res.send(result);
 				res.end();
 				db.close();
 			});
 		});
+	}
+	else{
+		MongoClient.connect(mongourl,function(err,db) {
+			assert.equal(err,null);
+				func.buyCoupon(db,user,point,function(result){
+					res.send(result);
+					res.end();
+					db.close();
+				});
+			});
+	}
 })
 
 app.post('/update/user/freeCoupon',function(req,res){
