@@ -272,6 +272,52 @@ app.post('/add/user/schedule',function(req,res){
 		});
 })
 
+app.post('/buus',function(req,res){
+	var i;
+	var name = req.body.user;
+	var schedule = [];
+	schedule = req.body.schedule;
+	var id = [];
+	id = req.body.id;
+
+	var criteria = {};
+	var doc = {};
+	var done = false;
+	var tid ;
+	var ts;
+	var sum =0;
+console.log("length: " + schedule.length + " and " + id.length);
+console.log(schedule);
+console.log(id);
+		MongoClient.connect(mongourl,function(err,db) {
+			assert.equal(err,null);
+
+			for(i=0;i<id.length; i++){
+				tid = id[i];
+				ts = schedule[i];
+
+				criteria = {"name" : name , "schedule.id" : tid};
+				console.log(criteria);
+
+				doc = {"schedule.$.schedule" : ts};
+				func.updateSchedule(db,criteria,doc,function(result){
+					console.log(result.result.nModified);
+					sum += parseInt(result.result.nModified);
+					if(sum = id.length && done == false){
+						done = true;
+						res.send(id.length + " items are updated\n");
+
+						db.close();
+						console.log("db closed");
+						res.end();
+					}
+				});
+
+			}//end for
+		});//end Mongo
+	
+})
+
 app.post('/update/user/schedule',function(req,res){
 	var name = req.body.user;
 	var schedule = req.body.schedule;
