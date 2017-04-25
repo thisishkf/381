@@ -163,33 +163,6 @@ app.get('/read/user/:name/schedule',function(req,res){
 	});
 });
 //update user information
-/*app.post('/update/user/info',function(req,res){
-	var name = req.body.name;
-	var gender = req.body.gender;
-	var bday = req.body.birthday;
-	var tele = req.body.telephone;
-	var email = req.body.email;
-	var country = req.body.country;
-	var bfile = req.body.bfile;
-
-	var criteria = {"name" : name};
-	var doc = {"gender" : gender, 
-						"birthday" : bday, 
-						"telephone" : tele, 
-						"email" : email, 
-						"country" : country,
-							"data" : new Buffer(bfile.data).toString('base64'),
-							"mimetype" : bfile.mimetype,};
-
-	MongoClient.connect(mongourl,function(err,db) {
-		assert.equal(err,null);
-			func.updateUserInfo(db,criteria,doc,function(updateResult){
-				res.end(updateResult);
-			})
-			db.close();
-		});
-});*/
-
 app.post('/update/user/info',function(req,res){
 	var name = req.body.name;
 	var gender = req.body.gender;
@@ -262,6 +235,7 @@ app.post('/add/user/schedule',function(req,res){
 	var id = ""+ parseInt(Math.random()*100000);
 	var criteria = {"name" : name};
 	var doc = {"id" : id, "schedule" : schedule};
+
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 			func.addSchedule(db,criteria,doc,function(result){
@@ -271,6 +245,38 @@ app.post('/add/user/schedule',function(req,res){
 			});
 		});
 })
+
+app.get('/add/user/schedule2',function(req,res){
+/*	var name = req.body.user;
+	var schedule = req.body.schedule;
+	var id = ""+ parseInt(Math.random()*100000);
+	var criteria = {"name" : name};
+	var doc = {"id" : id, "schedule" : schedule};
+
+	MongoClient.connect(mongourl,function(err,db) {
+		assert.equal(err,null);
+			func.addSchedule(db,criteria,doc,function(result){
+				res.send(id + '\n');
+				res.end();
+				db.close();
+			});
+		});*/
+
+	/*var title = schedule.substring(schedule.lastIndexOf(","));
+	console.log(title);*/
+	//var 20170510,20:00,Tuen Mun Takoyaki
+
+	/*for(eachSite of data[0]){
+		if(eachSite.title)
+	}*/
+
+	func.checkDayofWeek(01,01,function(ans){
+		res.send(ans);
+res.end();
+	})
+
+})
+
 
 app.post('/buus',function(req,res){
 	var i;
@@ -613,19 +619,19 @@ app.get('/api/read/:site/comment',function(req,res){
 
 /*******************radar*********************/
 app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
-	var criteria = req.params.category;
+	//var criteria = req.params.category;
 	var start ={latitude: req.params.lat, longitude: req.params.lon};
 	var end ={latitude: 0, longitude: 0};
 	var output =[];
 	for(eachSite of data[0]){	
-		if(eachSite.categroy == criteria){
+		//if(eachSite.categroy == criteria){
 			end.latitude = parseInt(eachSite.location.lat);
 			end.longitude = parseInt(eachSite.location.lon);
 			console.log(haversine(start,end));
 			if(haversine(start,end) <=100){
 				output.push(eachSite);
 			}
-		}
+		//}
 	}
 	if(output.length <1)
 		res.send("No result");
@@ -674,8 +680,8 @@ app.get('/api/read/home', function(req,res) {
 	output.push(weather);
 	output.push(hot);
 
-	var max1 =0, max2=0, max3=0;
-	var maxName1 ="", maxName2 ="",maxName3 ="";
+	var max1 =0, max2=0, max3=0,max4=0,max5=0;
+	var maxName1 ="", maxName2 ="",maxName3 ="",maxName4 ="",maxName5 ="";
 	var thisGrade =0;
 	var thisRank ={};
 	var numLike, numDislike;
@@ -692,6 +698,12 @@ app.get('/api/read/home', function(req,res) {
 		}else if(thisGrade > max3){
 			max3 = thisGrade;
 			maxName3 = eachSite.title;
+		}else if(thisGrade > max4){
+			max4 = thisGrade;
+			maxName4 = eachSite.title;
+		}else if(thisGrade > max5){
+			max5 = thisGrade;
+			maxName5 = eachSite.title;
 		}
 
 	}
@@ -702,6 +714,10 @@ app.get('/api/read/home', function(req,res) {
 		}else if(maxName2 == eachSite.title){
 			bestRanked.push(eachSite);
 		}else if(maxName3 == eachSite.title){
+			bestRanked.push(eachSite);
+		}else if(maxName4 == eachSite.title){
+			bestRanked.push(eachSite);
+		}else if(maxName5 == eachSite.title){
 			bestRanked.push(eachSite);
 		}
 	}

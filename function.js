@@ -381,7 +381,54 @@ console.log(doc);
 						console.log(result);
 						callback(result);	
 			})
-	}
+	},
+
+	checkDayofWeek :function(endmon,endday,callback){
+	var startmon = 1, startday = 1; 
+	var count = 0; 
+	while (1) { 
+		if (startmon == endmon && startday == endday) 
+			break; 
+		startday++; 
+		count++; 
+		switch (startmon) { 
+			case 1: case 3: case 5: case 7: case 8: case 10: case 12: 
+			if (startday == 32) { 
+				startmon++; 
+				startday = 1; 
+			} 
+			break; 
+		case 4: case 6: case 9: case 11: 
+			if (startday == 31) { 
+				startmon++; 
+				startday = 1; 
+			} 
+		break; 
+		case 2: 
+			if (startday == 30) { 
+				startmon++; 
+				startday = 1; 
+			} 
+		break; 
+		} 
+	} 
+	switch (count % 7) { 
+		case 0: callback("Sunday"); 
+		break; 
+		case 1: callback("Monday"); 
+		break; 
+		case 2: callback("Tuesday"); 
+		break; 
+		case 3: callback("Wednesday"); 
+		break; 
+		case 4: callback("Thursday"); 
+		break; 
+		case 5: callback("Friday"); 
+		break; 
+		case 6: callback("Saturday"); 
+		break; 
+	} 
+}
 
 
 }//module.export
