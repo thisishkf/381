@@ -360,9 +360,28 @@ console.log(doc);
 			}
 		}
 		callback(distanceList);
+	},
+
+	/*notice : function (weatherArray){
+		var functionDate = Date();
+		var date = functionDate.substring();
+	}*/
+
+	rank : function(db, criteria, doc, callback){
+		db.collection('district').update(criteria,{$set : doc},
+			function(result){
+				console.log(result);
+				callback(result);
+		})
+	},
+
+	blockrank : function(db,criteria,username,callback){
+				db.collection('district').update(criteria , {$push : {ranked : username}},
+					function(result){
+						console.log(result);
+						callback(result);	
+			})
 	}
-
-
 
 
 }//module.export

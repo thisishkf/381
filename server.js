@@ -100,7 +100,8 @@ app.post('/create/user',function(req,res){
 							"location" : {
 								"lat" : 0, 
 								"lon" : 0
-								}
+								},
+							"freeCoupon": false
 						};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
@@ -243,7 +244,7 @@ app.post('/update/user/point',function(req,res){
 	}
 })
 
-app.post('/update/user/freeCoupon',function(req,res){
+/*app.post('/update/user/freeCoupon',function(req,res){
 	var user = req.body.user;
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
@@ -253,9 +254,8 @@ app.post('/update/user/freeCoupon',function(req,res){
 				db.close();
 			});
 		});
-})
+})*/
 ///////////////////////////////////////////////////////////////////////////////
-//buy coupon
 app.post('/add/user/schedule',function(req,res){
 	var name = req.body.user;
 	var schedule = req.body.schedule;
@@ -385,7 +385,9 @@ console.log(bfile);
 							"mimetype" : bfile.mimetype,
 							"promotion" : null,
 							"issue" : null,
-							"f" : []
+							"f" : [],
+							"rank" : {"like" : 0 , "dislike" : 0},
+							"ranked" : []
 						};
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
@@ -443,6 +445,93 @@ app.post('/api/create/comment',function(req,res){
 	});//end db
 })
 
+app.get('/api/read/topRank' , function(req,res){
+	var output =[];
+	var max1 =0, max2=0, max3=0;
+	var maxName1 ="", maxName2 ="",maxName3 ="";
+	var thisGrade =0;
+	var thisRank ={};
+	var numLike, numDislike;
+	for(eachSite of data[0]){	
+		thisRank = eachSite.rank;
+		thisGrade = thisRank.like - thisRank.dislike;
+
+		if(thisGrade > max1){
+			max1 = thisGrade;
+			maxName1 = eachSite.title;
+		}else if(thisGrade > max2){
+			max2 = thisGrade;
+			maxName2 = eachSite.title;
+		}else if(thisGrade > max3){
+			max3 = thisGrade;
+			maxName3 = eachSite.title;
+		}
+
+	}
+
+	for(eachSite of data[0]){	
+		if(maxName1 == eachSite.title){
+			output.push(eachSite);
+		}else if(maxName2 == eachSite.title){
+			output.push(eachSite);
+		}else if(maxName3 == eachSite.title){
+			output.push(eachSite);
+		}
+	}
+	res.send(output);
+
+})
+
+
+app.post('/api/update/rank', function(req,res){
+	var title = req.body.title;
+	var username = req.body.username;
+	var grade = req.body.grade;
+	var tempGrade = 0;
+console.log(title);
+console.log(username);
+console.log(grade);
+
+	var site = {};
+	var doc = {};
+	var criteria = {};
+
+	for(eachSite of data[0]){	
+		if(title == eachSite.title){
+			site = eachSite;
+		}
+	}
+var arr = site.ranked;
+	if(arr.indexOf(username)){
+		if (grade >0){
+			tempGrade = site.rank.like +1;
+			doc = {"rank.like" : tempGrade };
+		}else if (grade < 0){
+			tempGrade = site.rank.dislike +1;
+			doc = {"rank.dislike" : tempGrade };
+		}
+
+		criteria = {"title" : title};
+	console.log(doc);
+	console.log(criteria);
+		MongoClient.connect(mongourl,function(err,db) {
+			assert.equal(err,null);
+				func.rank(db, criteria, doc,function(result){
+					func.blockrank(db, criteria, username,function(result){
+						res.end();
+						db.close();
+					})
+				})
+		});//end db
+	}
+	else{
+		res.send("ranked");
+		res.end();
+	}
+})
+
+
+
 //read districtList
 //testes
 app.get('/api/read/districtList',function(req,res){
@@ -491,6 +580,20 @@ app.get('/api/read/districtList/:district',function(req,res){
 		res.send(output);
 })
 
+
+app.get('/api/read/districtList/cat/:category',function(req,res){
+	var category = req.params.category;
+	var output = [];
+	for(eachDistrict of data[0]){	
+		if(eachDistrict.category ==category){
+			output.push(eachDistrict);
+		}
+	}
+	if(output.length <1)
+		res.send("No result");
+	else	
+		res.send(output);
+})
 //read comment
 //tested
 app.get('/api/read/:site/comment',function(req,res){
@@ -559,7 +662,7 @@ app.get('/api/read/home', function(req,res) {
 	var output = [];
 	var hot = [];
 	var weather =[];
-
+	var bestRanked =[];
 	weather.push(data[1]);
 
 	for(eachSite of data[0]){				
@@ -570,6 +673,39 @@ app.get('/api/read/home', function(req,res) {
 
 	output.push(weather);
 	output.push(hot);
+
+	var max1 =0, max2=0, max3=0;
+	var maxName1 ="", maxName2 ="",maxName3 ="";
+	var thisGrade =0;
+	var thisRank ={};
+	var numLike, numDislike;
+	for(eachSite of data[0]){	
+		thisRank = eachSite.rank;
+		thisGrade = thisRank.like - thisRank.dislike;
+
+		if(thisGrade > max1){
+			max1 = thisGrade;
+			maxName1 = eachSite.title;
+		}else if(thisGrade > max2){
+			max2 = thisGrade;
+			maxName2 = eachSite.title;
+		}else if(thisGrade > max3){
+			max3 = thisGrade;
+			maxName3 = eachSite.title;
+		}
+
+	}
+
+	for(eachSite of data[0]){	
+		if(maxName1 == eachSite.title){
+			bestRanked.push(eachSite);
+		}else if(maxName2 == eachSite.title){
+			bestRanked.push(eachSite);
+		}else if(maxName3 == eachSite.title){
+			bestRanked.push(eachSite);
+		}
+	}
+	output.push(bestRanked);
 	res.send(output);
 	res.end();
 })
@@ -796,7 +932,7 @@ app.post('/api/suggest/secdule',function(req,res){
 var Job = require('cron').CronJob;
 var weatherSchedule = '0 1 0 * * *';
 //var weatherSchedule = '0 42 11 * * *';
-var scheduleTime2 = '0 30 */1 * * *';
+var scheduleTime2 = '0 */30 * * * *';
 
 var weatherAPI = new Job(weatherSchedule , function() {	
 	var loopCount =1
