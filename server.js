@@ -794,7 +794,8 @@ app.post('/api/suggest/secdule',function(req,res){
 	}
 /*******************schedule Job*********************/
 var Job = require('cron').CronJob;
-var weatherSchedule = '22 21 * * *';
+var weatherSchedule = '0 1 0 * * *';
+//var weatherSchedule = '0 42 11 * * *';
 var scheduleTime2 = '0 30 */1 * * *';
 
 var weatherAPI = new Job(weatherSchedule , function() {	
