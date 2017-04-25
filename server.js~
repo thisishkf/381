@@ -246,34 +246,57 @@ app.post('/add/user/schedule',function(req,res){
 		});
 })
 
-app.get('/add/user/schedule2',function(req,res){
-/*	var name = req.body.user;
-	var schedule = req.body.schedule;
-	var id = ""+ parseInt(Math.random()*100000);
-	var criteria = {"name" : name};
-	var doc = {"id" : id, "schedule" : schedule};
+app.post('/add/user/schedule2',function(req,res){
+	var startT;
+	var ednT;
 
-	MongoClient.connect(mongourl,function(err,db) {
-		assert.equal(err,null);
-			func.addSchedule(db,criteria,doc,function(result){
-				res.send(id + '\n');
-				res.end();
-				db.close();
-			});
-		});*/
+ 	var schedule = req.body.schedule; 
+console.log(schedule);	
 
-	/*var title = schedule.substring(schedule.lastIndexOf(","));
-	console.log(title);*/
-	//var 20170510,20:00,Tuen Mun Takoyaki
+	var month = schedule.substring(4,6);
+	var date = schedule.substring(6,8);
+console.log(month);
+console.log(date);
 
-	/*for(eachSite of data[0]){
-		if(eachSite.title)
-	}*/
+	var addedTime = schedule.substring(schedule.indexOf(",")+1,schedule.indexOf(",")+3)+schedule.substring(schedule.indexOf(":")+1,schedule.indexOf(":")+3);
+console.log(addedTime);
+	var title = schedule.substring(schedule.lastIndexOf(",")+1);
+console.log(title);
+	var siteObj ={};
+	var tarHour;
 
-	func.checkDayofWeek(01,01,function(ans){
-		res.send(ans);
-res.end();
-	})
+	for(eachSite of data[0]){
+		if(eachSite.title == title){
+			siteObj = eachSite;
+			break;
+		}
+	}
+	func.checkDayofWeek(month,date,function(ans){
+console.log(siteObj.openHours);
+		tarHour = siteObj.openHours;
+		startT = tarHour[ans].substring(0,tarHour[ans].indexOf("-"));
+		endT = tarHour[ans].substring(tarHour[ans].indexOf("-")+1);
+
+console.log(startT + "," + endT);
+		if(addedTime >= startT && addedTime <=endT){
+			var name = req.body.user;
+			var id = ""+ parseInt(Math.random()*100000);
+			var criteria = {"name" : name};
+			var doc = {"id" : id, "schedule" : schedule};
+
+			MongoClient.connect(mongourl,function(err,db) {
+				assert.equal(err,null);
+					func.addSchedule(db,criteria,doc,function(result){
+						res.send(id + '\n');
+						res.end();
+						db.close();
+					});
+				});
+		}else{
+			res.send("no");
+			res.end();
+		}//end else
+	})//end time comparing
 
 })
 
@@ -619,19 +642,19 @@ app.get('/api/read/:site/comment',function(req,res){
 
 /*******************radar*********************/
 app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
-	var criteria = req.params.category;
+	//var criteria = req.params.category;
 	var start ={latitude: req.params.lat, longitude: req.params.lon};
 	var end ={latitude: 0, longitude: 0};
 	var output =[];
 	for(eachSite of data[0]){	
-		if(eachSite.categroy == criteria){
+		//if(eachSite.categroy == criteria){
 			end.latitude = parseInt(eachSite.location.lat);
 			end.longitude = parseInt(eachSite.location.lon);
 			console.log(haversine(start,end));
 			if(haversine(start,end) <=100){
 				output.push(eachSite);
 			}
-		}
+		//}
 	}
 	if(output.length <1)
 		res.send("No result");
@@ -936,12 +959,145 @@ app.post('/api/suggest/secdule',function(req,res){
 					choosen = distanceList[i].to;
 				}
 			}
-			console.log(name + "->");
+console.log(name + "->");
 			output.push(name);
+console.log("siteName = " + siteName);
 			siteName.splice(siteName.indexOf(name),1);
-			
+console.log("siteName = " + siteName);	
 			return findPath(siteName, choosen, distanceList, output);
 	
+		}
+	}
+/**suggest schedule 2.0****/
+app.post('/api/suggest/secdule/withTimeChecking',function(req,res){
+	var schedule =[];
+	schedule = req.body.schedule;
+
+	var time = [];
+	var location = [];
+
+	var month;
+	var date;
+
+	func.suggestSchedule_prepareData(schedule , function(callbackMonth, callbackDate , callbackTime, callbackLocation){
+		month = callbackMonth;
+		date = callbackDate;
+		time = callbackTime;
+		location = callbackLocation;
+
+
+		var siteObjectArray = [];	
+		var distanceList =[];
+		var path =[];
+		var tempPath =[];
+		var disPath =[];
+		var finalizedPath = [];
+		func.findObject(location ,data, function(result){//find object for lan,lon from buffered data 
+			siteObjectArray = result;
+			
+			func.calculateEachDistance(siteObjectArray,function(output){//cal distance betweeh each location
+				distanceList = output;		
+
+					disPath = findPath2(location, location[0], distanceList, tempPath);
+console.log("disPath: " + disPath)
+					finalizedPath = findPathCheckTime(data, month, date, disPath , siteObjectArray, time);
+console.log(finalizedPath);
+					res.send(finalizedPath);
+					res.end();
+			});//calculateEachDistance
+
+		});//end findObject
+	})//end suggestSchedule_prepareData()
+})
+
+	function findPath2(siteName, name, distanceList, output){
+		var i =0;
+		var minDis = 999;
+		var choosen;
+
+		if(siteName.length ==1){
+			console.log(name);
+			output.push(name)
+			return output;
+		}
+		else{
+			for(i=0; i<distanceList.length; i++){
+
+				if(distanceList[i].distance < minDis && 
+					distanceList[i].distance !=0 &&
+					siteName.indexOf(distanceList[i].to) >=0 &&
+					distanceList[i].from == name
+					){
+					minDis = distanceList[i].distance; 
+
+					choosen = distanceList[i].to;
+				}
+			}
+			output.push(name);
+			siteName.splice(siteName.indexOf(name),1);
+			return findPath2(siteName, choosen, distanceList, output);
+	
+		}
+	}
+
+	function findPathCheckTime(data, month, date, disPath , siteObjectArray, time ){
+		var count = 0;
+		var timepath =[];
+		var temp;
+
+		for (count =0; count < disPath.length ; count++){
+console.log("loop count: " + count);
+console.log("location: " + disPath[count]);
+console.log("time: " + time[count])
+		validateTime(data, month, date, disPath[count], time[count], function(boo){
+			if(boo == true){
+							timePath.push(disPath[count]);
+console.log("pushed location:" + disPath[count]);
+						}else if(boo == false){
+							temp = disPath[count-1];
+							disPath[count] = temp;
+console.log(disPath[count-1]);
+console.log(disPath[count]);
+							count-=1;
+						}
+					});
+			
+		}//end for
+		return timepath;
+		
+	}
+
+	function validateTime(data, month, date, title, time,callback){
+console.log(time);
+		var startT;
+		var ednT;
+		time = toString(time);
+
+		var siteObj ={};
+		var tarHour;
+
+		for(eachSite of data[0]){
+			if(eachSite.title == title){
+				siteObj = eachSite;
+				break;
+			}
+		}//end for
+
+		func.checkDayofWeek(month,date,function(ans){
+			tarHour = siteObj.openHours;
+console.log("tarHour: " +tarHour);
+			if( !tarHour[ans].equals("na")){
+				startT = tarHour[ans].substring(0,tarHour[ans].indexOf("-"));
+				endT = tarHour[ans].substring(tarHour[ans].indexOf("-")+1);
+	console.log(startT + " to " + endT);
+				if(time >= startT && time <= endT){
+					callback(true);
+				}else{
+					callback(false);
+				}//end else
+			})//end time comparing
+		}else{
+				callback(false);
 		}
 	}
 /*******************schedule Job*********************/

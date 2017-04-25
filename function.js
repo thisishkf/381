@@ -384,51 +384,91 @@ console.log(doc);
 	},
 
 	checkDayofWeek :function(endmon,endday,callback){
-	var startmon = 1, startday = 1; 
-	var count = 0; 
-	while (1) { 
-		if (startmon == endmon && startday == endday) 
+		endmon = parseInt(endmon);
+		endday = parseInt(endday);
+		var startmon = 1, startday = 1; 
+		var count = 0; 
+		while (1) { 
+			if (startmon == endmon && startday == endday) 
+				break; 
+			startday++; 
+			count++; 
+			switch (startmon) { 
+				case 1: case 3: case 5: case 7: case 8: case 10: case 12: 
+				if (startday == 32) { 
+					startmon++; 
+					startday = 1; 
+				} 
+				break; 
+			case 4: case 6: case 9: case 11: 
+				if (startday == 31) { 
+					startmon++; 
+					startday = 1; 
+				} 
 			break; 
-		startday++; 
-		count++; 
-		switch (startmon) { 
-			case 1: case 3: case 5: case 7: case 8: case 10: case 12: 
-			if (startday == 32) { 
-				startmon++; 
-				startday = 1; 
-			} 
+			case 2: 
+				if (startday == 29) { 
+					startmon++; 
+					startday = 1; 
+				} 
 			break; 
-		case 4: case 6: case 9: case 11: 
-			if (startday == 31) { 
-				startmon++; 
-				startday = 1; 
 			} 
-		break; 
-		case 2: 
-			if (startday == 30) { 
-				startmon++; 
-				startday = 1; 
-			} 
-		break; 
 		} 
-	} 
-	switch (count % 7) { 
-		case 0: callback("Sunday"); 
-		break; 
-		case 1: callback("Monday"); 
-		break; 
-		case 2: callback("Tuesday"); 
-		break; 
-		case 3: callback("Wednesday"); 
-		break; 
-		case 4: callback("Thursday"); 
-		break; 
-		case 5: callback("Friday"); 
-		break; 
-		case 6: callback("Saturday"); 
-		break; 
-	} 
-}
+		switch (count % 7) { 
+			case 0: callback("Sunday"); 
+			break; 
+			case 1: callback("Monday"); 
+			break; 
+			case 2: callback("Tuesday"); 
+			break; 
+			case 3: callback("Wednesday"); 
+			break; 
+			case 4: callback("Thursday"); 
+			break; 
+			case 5: callback("Friday"); 
+			break; 
+			case 6: callback("Saturday"); 
+			break; 
+		} 
+	},
+
+	suggestSchedule_prepareData : function (schedule,callback){
+		var month = schedule[0].substring(4,6);
+		var date = schedule[0].substring(6,8);
+		
+		var countSchedule = schedule.length;
+
+		var time =[];
+		var timePos_comma = 0;
+		var timePos_collon = 0;
+		var timeHour, timeMinutes;
+		var countTime =0;
+
+		var location =[];
+		var locationPos_start =0;
+		var countLocation =0;
+
+		for(countTime=0; countTime< countSchedule ; countTime++){
+			timePos_comma = schedule[countTime].indexOf(",");
+			timePos_collon = schedule[countTime].indexOf(":");
+			timeHour = schedule[countTime].substring(timePos_comma+1,timePos_comma+3);
+			timeMinutes = schedule[countTime].substring(timePos_collon+1,timePos_collon+3);
+			time[countTime] = timeHour + timeMinutes;
+		}
+
+		for(countLocation=0; countLocation< countSchedule ; countLocation++){
+			locationPos_start = schedule[countLocation].lastIndexOf(",")+1;
+			location[countLocation] = schedule[countLocation].substring(locationPos_start);
+		}
+
+		callback(month, date , time, location);
+	}
+
+
+
+
+
+
 
 
 }//module.export
