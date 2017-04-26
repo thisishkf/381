@@ -641,20 +641,20 @@ app.get('/api/read/:site/comment',function(req,res){
 })
 
 /*******************radar*********************/
-app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
-	//var criteria = req.params.category;
+app.get('/api/read/radarWithCat/:category/:lat/:lon', function(req,res){
+	var criteria = req.params.category;
 	var start ={latitude: req.params.lat, longitude: req.params.lon};
 	var end ={latitude: 0, longitude: 0};
 	var output =[];
 	for(eachSite of data[0]){	
-		//if(eachSite.categroy == criteria){
-			end.latitude = parseInt(eachSite.location.lat);
-			end.longitude = parseInt(eachSite.location.lon);
-			console.log(haversine(start,end));
-			if(haversine(start,end) <=100){
+		if(eachSite.categroy == criteria){
+			end.latitude = parseFloat(eachSite.location.lat);
+			end.longitude = parseFloat(eachSite.location.lon);
+			//console.log("Distance to " + eachSite.title + " = " + haversine(start,end));
+			if(haversine(start,end) <=1){
 				output.push(eachSite);
 			}
-		//}
+		}
 	}
 	if(output.length <1)
 		res.send("No result");
@@ -662,6 +662,36 @@ app.get('/api/read/radar/:category/:lat/:lon', function(req,res){
 		res.send(output);
 })
 
+app.get('/api/read/radar/:lat/:lon', function(req,res){
+	//var criteria = req.params.category;
+	var start ={latitude: req.params.lat, longitude: req.params.lon};
+	var end ={latitude: 0, longitude: 0};
+
+
+	var output =[];
+	for(eachSite of data[0]){	
+
+		//if(eachSite.categroy == criteria){
+			end.latitude = parseFloat(eachSite.location.lat);
+			end.longitude = parseFloat(eachSite.location.lon);
+
+//console.log(JSON.stringify(end));
+
+//console.log("Distance to " + eachSite.title + " = " + haversine(start,end, "km"));
+
+			if(haversine(start,end, "km") <=1){
+				output.push(eachSite);
+			}
+		//}
+	}
+
+	if(output.length <1)
+		res.send("No result");
+	else	
+		res.send(output);
+
+		res.end();
+})
 
 app.get('/api/read/map/:category', function(req,res){
 	var criteria = req.params.category;
@@ -1062,13 +1092,13 @@ console.log("pushed location:" + disPath[count]);
 			}
 
 			else if(!boo){
-				timepath.push(disPath[count]);
-				temp = timepath[count-1];
-				timepath[count-1] = timepath[count]; 
-				timepath[count] = temp;
-console.log(timepath[count-1]);
-console.log(timepath[count]);
-console.log("switched path: " + timepath);
+timepath.pop();
+				temp = disPath[count-1];
+				disPath[count-1] = disPath[count]; 
+				disPath[count] = temp;
+console.log(disPath[count-1]);
+console.log(disPath[count]);
+console.log("switched path: " + disPath);
 				count=-1;
 			}//end else		
 
@@ -1121,8 +1151,8 @@ console.log("is open: " + tarHour[ans] != "na");
 	}
 /*******************schedule Job*********************/
 var Job = require('cron').CronJob;
-var weatherSchedule = '0 1 0 * * *';
-//var weatherSchedule = '0 42 11 * * *';
+//var weatherSchedule = '0 1 1 * * *';
+var weatherSchedule = '0 37 11 * * *';
 var scheduleTime2 = '0 */30 * * * *';
 
 var weatherAPI = new Job(weatherSchedule , function() {	
