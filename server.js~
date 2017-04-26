@@ -992,21 +992,21 @@ app.post('/api/suggest/secdule/withTimeChecking',function(req,res){
 		var tempPath =[];
 		var disPath =[];
 		var finalizedPath = [];
-		func.findObject(location ,data, function(result){//find object for lan,lon from buffered data 
-			siteObjectArray = result;
+		siteObjectArray = func.findObject(location ,data);//find object for lan,lon from buffered data 
 			
-			func.calculateEachDistance(siteObjectArray,function(output){//cal distance betweeh each location
-				distanceList = output;		
+		distanceList = func.calculateEachDistance(siteObjectArray);//cal distance betweeh each location	
 
-					disPath = findPath2(location, location[0], distanceList, tempPath);
+		disPath = findPath2(location, location[0], distanceList, tempPath);
+
 console.log("disPath: " + disPath)
+
 					finalizedPath = findPathCheckTime(data, month, date, disPath , siteObjectArray, time);
+
 console.log(finalizedPath);
 					res.send(finalizedPath);
 					res.end();
-			});//calculateEachDistance
 
-		});//end findObject
+
 	})//end suggestSchedule_prepareData()
 })
 
@@ -1016,7 +1016,6 @@ console.log(finalizedPath);
 		var choosen;
 
 		if(siteName.length ==1){
-			console.log(name);
 			output.push(name)
 			return output;
 		}
@@ -1044,35 +1043,45 @@ console.log(finalizedPath);
 		var count = 0;
 		var timepath =[];
 		var temp;
+		var boo = true;		
 
 		for (count =0; count < disPath.length ; count++){
 console.log("loop count: " + count);
 console.log("location: " + disPath[count]);
 console.log("time: " + time[count])
-		validateTime(data, month, date, disPath[count], time[count], function(boo){
-			if(boo == true){
-							timePath.push(disPath[count]);
-console.log("pushed location:" + disPath[count]);
-						}else if(boo == false){
-							temp = disPath[count-1];
-							disPath[count] = temp;
-console.log(disPath[count-1]);
-console.log(disPath[count]);
-							count-=1;
-						}
-					});
 			
+			boo = validateTime(data, month, date, disPath[count], time[count]);
+console.log("Time validate? :" + boo);
+
+			if(boo){
+				console.log(disPath[count]);
+				if(timepath.indexOf(disPath[count]) <0){
+					timepath.push(disPath[count]);
+console.log("pushed location:" + disPath[count]);
+				}
+			}
+
+			else if(!boo){
+				timepath.push(disPath[count]);
+				temp = timepath[count-1];
+				timepath[count-1] = timepath[count]; 
+				timepath[count] = temp;
+console.log(timepath[count-1]);
+console.log(timepath[count]);
+console.log("switched path: " + timepath);
+				count=-1;
+			}//end else		
+
 		}//end for
-		return timepath;
-		
+		return timepath;	
 	}
 
-	function validateTime(data, month, date, title, time,callback){
-console.log(time);
+	function validateTime(data, month, date, title, time){
+
 		var startT;
 		var ednT;
-		time = toString(time);
-
+		//time = toString(time);
+console.log("validate target time: " + time);
 		var siteObj ={};
 		var tarHour;
 
@@ -1082,23 +1091,33 @@ console.log(time);
 				break;
 			}
 		}//end for
+		var ans ="";//weekDay
 
-		func.checkDayofWeek(month,date,function(ans){
+		ans = func.checkDayofWeek(month,date);
+
 			tarHour = siteObj.openHours;
-console.log("tarHour: " +tarHour);
-			if( !tarHour[ans].equals("na")){
+console.log(siteObj.title + ": " + JSON.stringify(tarHour));
+console.log("tarHour: " +tarHour + "/" + ans + " " + tarHour[ans]);
+console.log("is open: " + tarHour[ans] != "na");
+			if( tarHour[ans] != "na"){ //<-error
 				startT = tarHour[ans].substring(0,tarHour[ans].indexOf("-"));
 				endT = tarHour[ans].substring(tarHour[ans].indexOf("-")+1);
+
+				startT = parseInt(startT);
+				endT = parseInt(endT);
+
 	console.log(startT + " to " + endT);
 				if(time >= startT && time <= endT){
-					callback(true);
+					return true;					
+//callback(true);
 				}else{
-					callback(false);
+					return false;	
+					//callback(false);
 				}//end else
-			})//end time comparing
-		}else{
-				callback(false);
-		}
+			}
+			else{
+				return false;
+			}
 	}
 /*******************schedule Job*********************/
 var Job = require('cron').CronJob;

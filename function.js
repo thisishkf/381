@@ -317,7 +317,7 @@ console.log(doc);
 			return num;
 	},
 /*********************************************************************/
-	findObject : function(siteName, data, callback){
+	findObject : function(siteName, data){
 		var siteArray = [];
 
 		for(eachSite of data[0]){	
@@ -334,11 +334,11 @@ console.log(doc);
 				siteArray.push(eachSite);
 			} 
 		}//end for
-		callback(siteArray);
+		return siteArray;
 	},
 
 /*********************************************************************/
-	calculateEachDistance : function(siteArray, callback){
+	calculateEachDistance : function(siteArray){
 		var start, end = {};
 		var eachDistance = {};
 		var distanceList =[];
@@ -359,7 +359,8 @@ console.log(doc);
 				distanceList.push(eachDistance);
 			}
 		}
-		callback(distanceList);
+		//callback(distanceList);
+		return 	distanceList;
 	},
 
 	/*notice : function (weatherArray){
@@ -383,7 +384,7 @@ console.log(doc);
 			})
 	},
 
-	checkDayofWeek :function(endmon,endday,callback){
+	checkDayofWeek :function(endmon,endday){
 		endmon = parseInt(endmon);
 		endday = parseInt(endday);
 		var startmon = 1, startday = 1; 
@@ -415,7 +416,7 @@ console.log(doc);
 			} 
 		} 
 		switch (count % 7) { 
-			case 0: callback("Sunday"); 
+			/*case 0: callback("Sunday"); 
 			break; 
 			case 1: callback("Monday"); 
 			break; 
@@ -428,6 +429,20 @@ console.log(doc);
 			case 5: callback("Friday"); 
 			break; 
 			case 6: callback("Saturday"); 
+			break; */
+			case 0: return "Sunday"; 
+			break; 
+			case 1: return  "Monday"; 
+			break; 
+			case 2: return "Tuesday"; 
+			break; 
+			case 3: return "Wednesday"; 
+			break; 
+			case 4: return "Thursday"; 
+			break; 
+			case 5: return "Friday"; 
+			break; 
+			case 6: return "Saturday"; 
 			break; 
 		} 
 	},
