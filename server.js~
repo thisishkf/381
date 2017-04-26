@@ -651,7 +651,7 @@ app.get('/api/read/radarWithCat/:category/:lat/:lon', function(req,res){
 			end.latitude = parseFloat(eachSite.location.lat);
 			end.longitude = parseFloat(eachSite.location.lon);
 			//console.log("Distance to " + eachSite.title + " = " + haversine(start,end));
-			if(haversine(start,end) <=1){
+			if(haversine(start,end) <=0.5){
 				output.push(eachSite);
 			}
 		}
@@ -679,7 +679,7 @@ app.get('/api/read/radar/:lat/:lon', function(req,res){
 
 //console.log("Distance to " + eachSite.title + " = " + haversine(start,end, "km"));
 
-			if(haversine(start,end, "km") <=1){
+			if(haversine(start,end, "km") <=0.5){
 				output.push(eachSite);
 			}
 		//}

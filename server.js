@@ -1151,8 +1151,8 @@ console.log("is open: " + tarHour[ans] != "na");
 	}
 /*******************schedule Job*********************/
 var Job = require('cron').CronJob;
-//var weatherSchedule = '0 1 1 * * *';
-var weatherSchedule = '0 37 11 * * *';
+var weatherSchedule = '0 1 1 * * *';
+//var weatherSchedule = '0 37 11 * * *';
 var scheduleTime2 = '0 */30 * * * *';
 
 var weatherAPI = new Job(weatherSchedule , function() {	
