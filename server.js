@@ -1102,13 +1102,14 @@ timepath.pop();
 console.log(disPath[count-1]);
 console.log(disPath[count]);
 console.log("switched path: " + disPath);
-				count=-1;
+				count-=2;
 			}//end else		
 			else if(boo == "false: too early"){
 				temp = disPath[count];
-				disPath[count] = disPath[count-1];
-				disPath[count -1] = temp;
-				count-1;
+				disPath[count] = disPath[count+1];
+				disPath[count + 1] = temp;
+console.log("switched path: " + disPath);
+				count-=1;
 			}
 
 		}//end for
