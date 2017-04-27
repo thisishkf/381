@@ -454,7 +454,7 @@ app.post('/api/create/comment',function(req,res){
 							data.push(district);
 							func.getweather(db,function(weather){
 								db.close();
-								func.sortWeather(weather,function(out){
+								func.sortWeather2(weather,function(out){
 										weather = out;
 										data.push(weather);
 										res.send("ok");	
@@ -1320,14 +1320,16 @@ app.listen(process.env.PORT ||8090, function() {
 		func.getDistrict(db,function(district){
 			data.push(district);
 			func.getweather(db,function(weather){
+
 				db.close();
 				data.push(weather);
 					console.log("Start: " + Date());
  					console.log('Server is on.');
-					func.sortWeather(weather,function(out){
+					func.sortWeather2(weather,function(out){
 						if(out != []){
 							data.pop();
 							weather = out;
+
 							data.push(weather);
 						}
 					})

@@ -288,20 +288,22 @@ console.log(doc);
 		s= data[i].Date;
 		m = s.charAt(s.indexOf("/")+1);
 		d = s.substring(0,s.indexOf("/")-1);
+console.log(m);
+console.log(d);
 
 		for(c=1;c<data.length;c++){
 
 			ts = data[c].Date;
 			tm = ts.charAt(ts.indexOf("/")+1);
 
-			if(compared == 0 && m > tm){compared == 1;break;}
+			if(compared == 0 && m > tm){compared == 1;continue;}
 		
 			if(compared == 0 && c == data.length -1){	
 				for(dc=1;dc<data.length;dc++){
 					ts = data[dc].Date;
 					td = s.substring(0,ts.indexOf("/")-1);
 					
-					if(d>td){index = dc;break;}
+					if(d>td){index = dc;continue;}
 				}
 			}
 		}
@@ -309,6 +311,55 @@ console.log(doc);
 		for (i=0;i<index;i++){out.push(data[i]);}
 		callback(out);
 	},
+
+	sortWeather2 : function(data,callback){
+console.log("sortingn weather");
+		var out =[];
+		var i=0,c=1,dc=1;
+		var index=0, lastIndex =0;;
+		var flagI = true, flagl = true;
+		var day,targetDay;
+		var month,targetMonth;
+		var fullDate,targetFullDate;
+
+		var temp;	
+
+		var compared =0;
+
+		//loop counter holdling Date
+		for(i=0; i< data.length; i++){
+			
+
+			for(c= 1 ; c<data.length -i; c++){
+				fullDate = data[c-1].Date;
+				month = fullDate.charAt(fullDate.indexOf("/")+1);
+				day = fullDate.substring(0,fullDate.indexOf("/"));
+
+				targetFullDate = data[c].Date;
+				targetMonth = targetFullDate.charAt(targetFullDate.indexOf("/")+1);
+				targetDay = targetFullDate.substring(0,targetFullDate.indexOf("/"));
+//console.log(day + "/" + month + " vs " + targetDay + "/" + targetMonth);
+
+				//find first different
+				if(month == targetMonth ){
+					if(day > targetDay){  
+            //swap elements  
+            temp = data[c-1];  
+            data[c-1] = data[c];  
+            data[c] = temp;  
+					}
+				}
+				else if(month > targetMonth ){
+ //swap elements  
+          temp = data[c-1];  
+          data[c-1] = data[c];  
+          data[c] = temp;  
+				}
+			}
+		}
+		callback(data);
+	},
+
 /*********************************************************************/
 	absoluteValue : function(num){
 		if (num < 0)
