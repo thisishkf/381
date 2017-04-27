@@ -313,7 +313,7 @@ console.log(d);
 	},
 
 	sortWeather2 : function(data,callback){
-console.log("sortingn weather");
+console.log("Sorting weather");
 		var out =[];
 		var i=0,c=1,dc=1;
 		var index=0, lastIndex =0;;
@@ -338,7 +338,7 @@ console.log("sortingn weather");
 				targetFullDate = data[c].Date;
 				targetMonth = targetFullDate.charAt(targetFullDate.indexOf("/")+1);
 				targetDay = targetFullDate.substring(0,targetFullDate.indexOf("/"));
-console.log(day + "/" + month + " vs " + targetDay + "/" + targetMonth);
+//console.log(day + "/" + month + " vs " + targetDay + "/" + targetMonth);
 
 				//find first different
 				if(month == targetMonth ){
@@ -357,6 +357,7 @@ console.log(day + "/" + month + " vs " + targetDay + "/" + targetMonth);
 				}
 			}
 		}
+console.log("End sorting weather");
 		callback(data);
 	},
 

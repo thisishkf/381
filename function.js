@@ -313,7 +313,7 @@ console.log(d);
 	},
 
 	sortWeather2 : function(data,callback){
-console.log("sortingn weather");
+console.log("Sorting weather");
 		var out =[];
 		var i=0,c=1,dc=1;
 		var index=0, lastIndex =0;;
@@ -357,6 +357,7 @@ console.log("sortingn weather");
 				}
 			}
 		}
+console.log("End sorting weather");
 		callback(data);
 	},
 
@@ -370,12 +371,16 @@ console.log("sortingn weather");
 /*********************************************************************/
 	findObject : function(siteName, data){
 		var siteArray = [];
+var i;
+var count = siteName.length;
 
 		for(eachSite of data[0]){	
-			if(eachSite.title == siteName[0]){
-				siteArray.push(eachSite);
+			for(i=0;i<count;i++){
+				if(eachSite.title == siteName[i]){
+					siteArray.push(eachSite);
+				}
 			}
-			else if(eachSite.title == siteName[1]){
+			/*else if(eachSite.title == siteName[1]){
 				siteArray.push(eachSite);
 			} 
 			else if(eachSite.title == siteName[2]){
@@ -383,7 +388,7 @@ console.log("sortingn weather");
 			} 
 			else if(eachSite.title == siteName[3]){
 				siteArray.push(eachSite);
-			} 
+			} */
 		}//end for
 		return siteArray;
 	},

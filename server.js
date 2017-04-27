@@ -1023,9 +1023,9 @@ app.post('/api/suggest/secdule/withTimeChecking',function(req,res){
 		var disPath =[];
 		var finalizedPath = [];
 		siteObjectArray = func.findObject(location ,data);//find object for lan,lon from buffered data 
-			
+	console.log("siteObjectArray : " + siteObjectArray);		
 		distanceList = func.calculateEachDistance(siteObjectArray);//cal distance betweeh each location	
-
+console.log("distanceList : " + distanceList);
 		disPath = findPath2(location, location[0], distanceList, tempPath);
 
 console.log("disPath: " + disPath)
@@ -1046,7 +1046,9 @@ console.log(finalizedPath);
 		var choosen;
 
 		if(siteName.length ==1){
-			output.push(name)
+console.log("last added name: " + name);
+			output.push(name);
+console.log("After find path:" + output);
 			return output;
 		}
 		else{
@@ -1064,6 +1066,7 @@ console.log(finalizedPath);
 			}
 			output.push(name);
 			siteName.splice(siteName.indexOf(name),1);
+console.log(siteName);
 			return findPath2(siteName, choosen, distanceList, output);
 	
 		}
@@ -1073,7 +1076,7 @@ console.log(finalizedPath);
 		var count = 0;
 		var timepath =[];
 		var temp;
-		var boo = true;		
+		var boo = "";		
 
 		for (count =0; count < disPath.length ; count++){
 console.log("loop count: " + count);
@@ -1083,7 +1086,7 @@ console.log("time: " + time[count])
 			boo = validateTime(data, month, date, disPath[count], time[count]);
 console.log("Time validate? :" + boo);
 
-			if(boo){
+			if(boo =="true"){
 				console.log(disPath[count]);
 				if(timepath.indexOf(disPath[count]) <0){
 					timepath.push(disPath[count]);
@@ -1091,7 +1094,7 @@ console.log("pushed location:" + disPath[count]);
 				}
 			}
 
-			else if(!boo){
+			else if(boo == "false: too late"){
 timepath.pop();
 				temp = disPath[count-1];
 				disPath[count-1] = disPath[count]; 
@@ -1101,6 +1104,12 @@ console.log(disPath[count]);
 console.log("switched path: " + disPath);
 				count=-1;
 			}//end else		
+			else if(boo == "false: too early"){
+				temp = disPath[count];
+				disPath[count] = disPath[count-1];
+				disPath[count -1] = temp;
+				count-1;
+			}
 
 		}//end for
 		return timepath;	
@@ -1138,12 +1147,15 @@ console.log("is open: " + tarHour[ans] != "na");
 
 	console.log(startT + " to " + endT);
 				if(time >= startT && time <= endT){
-					return true;					
+					return "true";					
 //callback(true);
-				}else{
-					return false;	
+				}else if(time >= endT){
+					return "false: too late";	
 					//callback(false);
 				}//end else
+				else if(time <= startT){
+					return "false: too early";	
+				}
 			}
 			else{
 				return false;
