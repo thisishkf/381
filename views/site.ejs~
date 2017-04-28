@@ -4,7 +4,7 @@
 <body>
 	<table>
 <tr><td>
-	<img src="data:<%=rest.mimetype%>;base64,<%=rest.data%>"/>
+	<img src="data:<%=output.mimetype%>;base64,<%=output.data%>"/>
 </td></tr>
 			<tr><td>Title</td><td><%=output.title%></td></tr>
 			<tr><td colspan="2">Location</td><td></td></tr>

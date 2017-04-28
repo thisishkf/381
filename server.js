@@ -507,6 +507,7 @@ app.get('/api/read/topRank' , function(req,res){
 			output.push(eachSite);
 		}
 	}
+
 	res.send(output);
 
 })
@@ -547,8 +548,21 @@ var arr = site.ranked;
 			assert.equal(err,null);
 				func.rank(db, criteria, doc,function(result){
 					func.blockrank(db, criteria, username,function(result){
-						res.end();
-						db.close();
+						data =[];
+console.log("^---null");
+						func.getDistrict(db,function(district){
+							data.push(district);
+							func.getweather(db,function(weather){
+								db.close();
+								func.sortWeather2(weather,function(out){
+										weather = out;
+										data.push(weather);
+										res.end();
+db.close();
+									})
+							})
+						})
+						
 					})
 				})
 		});//end db
@@ -614,14 +628,18 @@ app.get('/api/read/districtList/cat/:category',function(req,res){
 	var category = req.params.category;
 	var output = [];
 	for(eachDistrict of data[0]){	
-		if(eachDistrict.category ==category){
+		if(eachDistrict.category == category){
 			output.push(eachDistrict);
 		}
 	}
-	if(output.length <1)
+	if(output.length <1){
 		res.send("No result");
-	else	
+		res.end();
+	}
+	else{	
 		res.send(output);
+		res.end();
+	}
 })
 //read comment
 //tested
@@ -1313,7 +1331,7 @@ var bufferAll = new Job(scheduleTime2 , function() {
 			data.push(district);
 			func.getweather(db,function(weather){
 				db.close();
-				func.sortWeather(weather,function(out){
+				func.sortWeather2(weather,function(out){
 						weather = out;
 						data.push(weather);
 					})

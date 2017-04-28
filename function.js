@@ -488,9 +488,9 @@ var count = siteName.length;
 			break; */
 			case 0: return "Sunday"; 
 			break; 
-			case 1: return  "Monday"; 
+			case 1: return "Monday"; 
 			break; 
-			case 2: return "Tuesday"; 
+			case 2: return "Tueday"; 
 			break; 
 			case 3: return "Wednesday"; 
 			break; 

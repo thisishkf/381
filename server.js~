@@ -507,6 +507,7 @@ app.get('/api/read/topRank' , function(req,res){
 			output.push(eachSite);
 		}
 	}
+
 	res.send(output);
 
 })
@@ -547,8 +548,21 @@ var arr = site.ranked;
 			assert.equal(err,null);
 				func.rank(db, criteria, doc,function(result){
 					func.blockrank(db, criteria, username,function(result){
-						res.end();
-						db.close();
+						data =[];
+console.log("^---null");
+						func.getDistrict(db,function(district){
+							data.push(district);
+							func.getweather(db,function(weather){
+								db.close();
+								func.sortWeather2(weather,function(out){
+										weather = out;
+										data.push(weather);
+										res.end();
+db.close();
+									})
+							})
+						})
+						
 					})
 				})
 		});//end db
@@ -1102,7 +1116,7 @@ timepath.pop();
 console.log(disPath[count-1]);
 console.log(disPath[count]);
 console.log("switched path: " + disPath);
-				count-=1;
+				count-=2;
 			}//end else		
 			else if(boo == "false: too early"){
 				temp = disPath[count];
@@ -1313,7 +1327,7 @@ var bufferAll = new Job(scheduleTime2 , function() {
 			data.push(district);
 			func.getweather(db,function(weather){
 				db.close();
-				func.sortWeather(weather,function(out){
+				func.sortWeather2(weather,function(out){
 						weather = out;
 						data.push(weather);
 					})
