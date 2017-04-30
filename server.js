@@ -793,6 +793,7 @@ app.get('/api/read/home', function(req,res) {
 		}
 	}
 	output.push(bestRanked);
+	output.push(data[2]);
 	res.send(output);
 	res.end();
 })
@@ -827,6 +828,23 @@ app.get('/admin/read/attraction',function(req,res){
 	}
 	res.render('attraction.ejs',{output:output});
 })
+
+var parser = require('rss-parser');
+ 
+
+app.get('/test/rss',function(req,res){
+var content ="";
+	parser.parseURL('http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml', function(err, parsed) {
+
+		parsed.feed.entries.forEach(function(entry) {
+content=entry.title;
+content = content.substring(0, content.indexOf("(")-1);
+		  console.log(content);
+			
+		})
+	})
+
+});
 
 //tested
 app.get('/admin/read/site/:name',function(req,res){
@@ -1184,7 +1202,7 @@ console.log("is open: " + tarHour[ans] != "na");
 var Job = require('cron').CronJob;
 var weatherSchedule = '0 1 1 * * *';
 //var weatherSchedule = '0 37 11 * * *';
-var scheduleTime2 = '0 */30 * * * *';
+var scheduleTime2 = '0 */15 * * * *';
 
 var weatherAPI = new Job(weatherSchedule , function() {	
 	var loopCount =1
@@ -1323,6 +1341,17 @@ apiRes.on('end', function (chunk) {
 
 
 var bufferAll = new Job(scheduleTime2 , function() {	
+var content ="";
+	parser.parseURL('http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml', function(err, parsed) {
+
+		parsed.feed.entries.forEach(function(entry) {
+content=entry.title;
+content = content.substring(0, content.indexOf("(")-1);
+		  console.log(content);
+			
+		})
+	})
+
 	MongoClient.connect(mongourl,function(err,db) {
 		assert.equal(err,null);
 		console.log("Buffer All: " + Date());
@@ -1334,6 +1363,7 @@ var bufferAll = new Job(scheduleTime2 , function() {
 				func.sortWeather2(weather,function(out){
 						weather = out;
 						data.push(weather);
+						data.push(content);
 					})
 			})
 		})
@@ -1345,6 +1375,16 @@ var bufferAll = new Job(scheduleTime2 , function() {
 app.listen(process.env.PORT ||8090, function() {
 	console.log("Preparing ...");
 		data =[];
+var content ="";
+	parser.parseURL('http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml', function(err, parsed) {
+
+		parsed.feed.entries.forEach(function(entry) {
+content=entry.title;
+content = content.substring(0, content.indexOf("(")-1);
+		  console.log(content);
+			
+		})
+	})
 	MongoClient.connect(mongourl,function(err,db) {
 
 		assert.equal(err,null);
@@ -1362,6 +1402,7 @@ app.listen(process.env.PORT ||8090, function() {
 							weather = out;
 
 							data.push(weather);
+							data.push(content);
 						}
 					})
 			})
