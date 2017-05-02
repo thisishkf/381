@@ -587,15 +587,15 @@ app.get('/api/read/siteList',function(req,res){
 
 	var out ={};
 	for(dis of districtList){
-	out[dis]= [];
+		out[dis]= [];
 	}
 
 	for(eachSite of data[0]){
-	console.log(eachSite.district);
 		for(distr of districtList){
-		if(eachSite.district == distr){
-			out[dis].push(eachSite.title);
-		}
+			if(eachSite.district == distr){
+				console.log(distr + " - " + eachSite.district);
+				out[distr].push(eachSite.title);
+			}
 		}
 	}
 	res.send(out);
