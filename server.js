@@ -584,11 +584,22 @@ app.get('/api/read/districtList',function(req,res){
 //read siteList
 //testes
 app.get('/api/read/siteList',function(req,res){
-	var output = [];
-	for(eachSite of data[0]){	
-		output.push(eachSite.title);
+
+	var out ={};
+	for(dis of districtList){
+	out[dis]= [];
 	}
-	res.send(output);
+
+	for(eachSite of data[0]){
+	console.log(eachSite.district);
+		for(distr of districtList){
+		if(eachSite.district == distr){
+			out[dis].push(eachSite.title);
+		}
+		}
+	}
+	res.send(out);
+	
 })
 
 //read one site
