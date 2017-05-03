@@ -252,7 +252,7 @@ app.post('/add/user/schedule2',function(req,res){
 
  	var schedule = req.body.schedule; 
 console.log(schedule);	
-
+var weekday ="";
 	var month = schedule.substring(4,6);
 	var date = schedule.substring(6,8);
 console.log(month);
@@ -271,11 +271,13 @@ console.log(title);
 			break;
 		}
 	}
-	func.checkDayofWeek(month,date,function(ans){
+console.log("checking day of week");
+	weekday = func.checkDayofWeek(month,date);
+console.log(weekday);
 console.log(siteObj.openHours);
 		tarHour = siteObj.openHours;
-		startT = tarHour[ans].substring(0,tarHour[ans].indexOf("-"));
-		endT = tarHour[ans].substring(tarHour[ans].indexOf("-")+1);
+		startT = tarHour[weekday].substring(0,tarHour[weekday].indexOf("-"));
+		endT = tarHour[weekday].substring(tarHour[weekday].indexOf("-")+1);
 
 console.log(startT + "," + endT);
 		if(addedTime >= startT && addedTime <=endT){
@@ -296,7 +298,7 @@ console.log(startT + "," + endT);
 			res.send("no");
 			res.end();
 		}//end else
-	})//end time comparing
+
 
 })
 
